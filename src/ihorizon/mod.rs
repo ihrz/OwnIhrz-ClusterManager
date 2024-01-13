@@ -1,45 +1,33 @@
-use rocket::data::{
-    self,
-    Outcome::{Failure, Success},
-    FromData, ToByteUnit,
-};
+use rocket::data::{self, FromData, ToByteUnit};
 use rocket::http::Status;
 use rocket::request::Request;
 use serde::Deserialize;
+use std::process::Command;
 
+#[serde(crate = "rocket::serde")]
 #[derive(FromForm, Deserialize)]
 pub struct Bot<'r> {
-    id: &'r str,
-    username: &'r str,
-    public: bool,
+    pub id: &'r str,
+    pub username: &'r str,
+    pub public: bool,
 }
 
+pub struct CustomCli {
+    pub line: String,
+    pub pwd: String,
+}
+
+#[serde(crate = "rocket::serde")]
 #[derive(FromForm, Deserialize)]
 pub struct CustomIhorizon<'r> {
-    auth: &'r str,
-    owner_one: &'r str,
-    owner_two: Option<&'r str>,
-    expire_in: u128,
-    bot: Bot<'r>,
-    admin_key: &'r str,
-    code: &'r str,
+    pub auth: &'r str,
+    pub owner_one: &'r str,
+    pub owner_two: Option<&'r str>,
+    pub expire_in: u128,
+    pub bot: Bot<'r>,
+    pub admin_key: &'r str,
+    pub code: &'r str,
 }
-
-#[rocket::async_trait]
-impl<'r> FromData<'r> for Bot<'r> {
-    type Error = String;
-
-    async fn from_data(req: &'r Request<'_>, data: Data<'r>) -> data::Outcome<'r, Self> {
-        match serde_urlencoded::from_reader::<Bot<'r>, _>(data.open(10.megabytes())) {
-            Ok(custom) => data::Outcome::Success(custom),
-            Err(_) => {
-                data::Outcome::Failure((Status::BadRequest, "Invalid data format".to_string()))
-            }
-        }
-    }
-}
-
-
 
 impl<'r> CustomIhorizon<'r> {
     pub fn new() -> Self {
@@ -59,16 +47,16 @@ impl<'r> CustomIhorizon<'r> {
     }
 }
 
-#[rocket::async_trait]
-impl<'r> FromData<'r> for CustomIhorizon<'r> {
-    type Error = String;
+impl CustomCli {
+    pub fn new(line: String, pwd: String) -> Self {
+        Self { line, pwd }
+    }
 
-    async fn from_data(req: &'r Request<'_>, data: Data<'r>) -> data::Outcome<'r, Self> {
-        match serde_urlencoded::from_reader::<CustomIhorizon<'r>, _>(data.open(10.megabytes())) {
-            Ok(custom) => data::Outcome::Success(custom),
-            Err(_) => {
-                data::Outcome::Failure((Status::BadRequest, "Invalid data format".to_string()))
-            }
-        }
+    pub fn execute(&self) -> std::io::Result<std::process::Output> {
+        Command::new("sh")
+            .arg("-c")
+            .arg(&self.line)
+            .current_dir(&self.pwd)
+            .output()
     }
 }
