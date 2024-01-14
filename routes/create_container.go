@@ -1,0 +1,183 @@
+// ./routes/create_container.go
+package routes
+
+import (
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"server/method"
+	"server/structure"
+	"strconv"
+	"strings"
+
+	"github.com/gofiber/fiber/v2"
+)
+
+func CreateContainer(app *fiber.App) {
+
+	app.Post("/api/publish", func(c *fiber.Ctx) error {
+		fmt.Println("test")
+		var data structure.CustomIhorizonData
+
+		if err := c.BodyParser(&data); err != nil {
+			fmt.Print(err)
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
+		}
+
+		config, err := method.LoadConfig()
+		if err != nil {
+			fmt.Print(err)
+			return c.Status(fiber.StatusInternalServerError).SendString("Failed to load config")
+		}
+
+		if err != nil {
+			fmt.Print(err)
+			return c.Status(fiber.StatusInternalServerError).SendString("Decryption failed")
+		}
+
+		if !validateDecryptedData(&data, config) {
+			fmt.Println("Erreur")
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid data")
+		}
+
+		err = os.MkdirAll(filepath.Join(processCWD(), "ownihrz", data.Code), os.ModePerm)
+		if err != nil {
+			fmt.Print(err)
+			return c.Status(fiber.StatusInternalServerError).SendString("Failed to create directory")
+		}
+
+		portRange := 29268
+
+		cliArray := []struct {
+			L   string
+			CWD string
+		}{
+			{
+				L:   "git clone --branch ownihrz --depth 1 https://github.com/ihrz/ihrz.git .",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code),
+			},
+
+			{
+				L:   "mv src/files/config.example.ts src/files/config.ts",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/|| \"The bot token\",/|| \"{Auth}\",/g' config.ts", "{Auth}", data.Auth, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"The discord User ID of the Owner number One\",/\"{OwnerOne}\",/' config.ts", "{OwnerOne}", data.OwnerOne, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"The discord User ID of the Owner number Two\",/\"{OwnerTwo}\",/' config.ts", "{OwnerTwo}", data.OwnerTwo, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"login\\.domain\\.com\"/\"localhost\"/' config.ts", "{PortRange}", strconv.Itoa(portRange), 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"apiToken\": \"The API'\"'\"'s token for create a request (Need to be private for security reason)\",/\"apiToken\": \"{APIToken}\",/' config.ts", "{APIToken}", config.API.APIToken, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   "sed -i 's/\"useProxy\": false/\"useProxy\": true/' config.ts",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   "sed -i 's#\"proxyUrl\": \"https://login.example.com\"#\"proxyUrl\": \"https://srv.ihorizon.me\"#' config.ts",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"The client ID of your application\"/\"{ClientID}\"/' config.ts", "{ClientID}", config.API.ClientID, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"3000\"/\"{PortRange}\"/' config.ts", "{PortRange}", strconv.Itoa(portRange), 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   "sed -i 's/\"blacklistPictureInEmbed\": \"The image of the blacklist'\\''s Embed (When blacklisted user attempt to interact with the bot)\",/\"blacklistPictureInEmbed\": \"https:\\/\\/media.discordapp.net\\/attachments\\/1099043567659384942\\/1119214828330950706\\/image.png\",/' config.ts",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("cp -r ./node_modules/ ./ownihrz/{Code}/node_modules/", "{Code}", data.Code, 1),
+				CWD: processCWD(),
+			},
+
+			{
+				L:   "npx tsc",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code),
+			},
+
+			{
+				L:   strings.Replace(`mv dist/index.js dist/{Code}.js`, "{Code}", data.Code, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code),
+			},
+
+			{
+				L:   strings.Replace(`pm2 start ./dist/{Code}.js -f`, "{Code}", data.Code, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code),
+			},
+		}
+
+		for _, index := range cliArray {
+			cmd := exec.Command("sh", "-c", index.L)
+			cmd.Dir = index.CWD
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				fmt.Print(err)
+				return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+			}
+		}
+
+		// err = setDatabaseEntry(data, portRange)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		}
+
+		return nil
+	})
+
+}
+
+func validateDecryptedData(data *structure.CustomIhorizonData, config *structure.Config) bool {
+	return data.AdminKey == config.API.APIToken &&
+		data.OwnerOne != "" &&
+		data.OwnerTwo != "" &&
+		data.ExpireIn != 0 &&
+		data.Bot.ID != "" &&
+		data.Code != ""
+}
+
+func processCWD() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return dir
+}
+
+func pathResolve(elem ...string) string {
+	return filepath.Join(elem...)
+}
+
+func setDatabaseEntry(data *structure.CustomIhorizonData, portRange int) error {
+	// Implement your logic to set data into the database
+	return nil
+}
