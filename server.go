@@ -89,8 +89,16 @@ func main() {
 			L   string
 			CWD string
 		}{
-			{L: "git clone --branch ownihrz --depth 1 https://github.com/ihrz/ihrz.git .", CWD: pathResolve(processCWD(), "ownihrz", data.Code)},
-			{L: "mv src/files/config.example.ts src/files/config.ts", CWD: pathResolve(processCWD(), "ownihrz", data.Code)},
+			{
+				L:   "git clone --branch ownihrz --depth 1 https://github.com/ihrz/ihrz.git .",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code),
+			},
+
+			{
+				L:   "mv src/files/config.example.ts src/files/config.ts",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code),
+			},
+
 			{
 				L:   strings.Replace("sed -i 's/|| \"The bot token\",/|| \"{Auth}\",/g' config.ts", "{Auth}", data.Auth, 1),
 				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
@@ -122,7 +130,7 @@ func main() {
 			},
 
 			{
-				L:   "sed -i 's/\"proxyUrl\": \"https:\\/\\/login\\.example\\.com\" / \"proxyUrl\": \"https:\\/\\/srv\\.ihorizon\\.me\"/' config.ts",
+				L:   `sed -i 's/"proxyUrl": "https:\\/\\/login\\.example\\.com"/"proxyUrl": "https:\\/\\/srv\\.ihorizon\\.me"/' config.ts`,
 				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
