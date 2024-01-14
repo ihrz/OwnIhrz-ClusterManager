@@ -1,22 +1,10 @@
-package aeshelper
+package helper
 
 import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/hex"
 )
-
-type CustomIhorizonData struct {
-	AdminKey string `json:"admin_key"`
-	Auth     string `json:"auth"`
-	OwnerOne string `json:"owner_one"`
-	OwnerTwo string `json:"owner_two"`
-	Bot      struct {
-		ID string `json:"id"`
-	} `json:"bot"`
-	ExpireIn string `json:"expireIn"`
-	Code     string `json:"code"`
-}
 
 // func Decrypt(encryptedString string, keyString string) (decryptedString string) {
 
