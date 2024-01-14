@@ -13,15 +13,6 @@ use ihorizon::CustomCli;
 // use crypto::blockmodes::NoPadding;
 // use crypto::buffer::{ReadBuffer, WriteBuffer, BufferResult};
 
-#[get("/web")]
-fn hello() -> &'static str {
-    "hellow world"
-}
-
-#[get("/bo?")]
-fn jesuismagnifique() -> &'static str {
-    "jsais bbou"
-}
 #[post("/new_ihorizon", data = "<bot>")]
 fn create_new_custom_bot(bot: Json<ihorizon::CustomIhorizon<'_>>) -> &'static str {
 
@@ -86,7 +77,7 @@ fn create_new_custom_bot(bot: Json<ihorizon::CustomIhorizon<'_>>) -> &'static st
         },
         CustomCli {
             line: format!("sed -i 's/\"blacklistPictureInEmbed\": \"The image of the blacklist'\\''s Embed (When blacklisted user attempt to interact with the bot)\",\"blacklistPictureInEmbed\": \"https:\\/\\/media.discordapp.net\\/attachments\\/1099043567659384942\\/1119214828330950706\\/image.png\",/' config.ts"),
-            pwd: format!("{pwd}"),
+            pwd: format!("{pwd}/ownihrz/{}/src/files", code)
         },
         CustomCli {
             line: format!("cp -r ./node_modules/ ./ownihrz/{code}/node_modules/"),
@@ -94,22 +85,22 @@ fn create_new_custom_bot(bot: Json<ihorizon::CustomIhorizon<'_>>) -> &'static st
         },
         CustomCli {  
             line: "npx tsc".to_string(),
-            pwd: format!("{pwd}/ownihrz/{}/src", code),
+            pwd: format!("{pwd}/ownihrz/{}", code),
         },
         CustomCli {
             line: format!(r#"mv dist/index.js dist/{}.js"#, code),
-            pwd: format!("{pwd}/ownihrz/{}/src", code),
+            pwd: format!("{pwd}/ownihrz/{}/", code),
         },
         CustomCli {
             line: format!(r#"pm2 start ./dist/{}.js -f"#, code),
-            pwd: format!("{pwd}/ownihrz/{}/src", code),
+            pwd: format!("{pwd}/ownihrz/{}/", code),
         }
     ];
 
     for cli in cli_array {
         match cli.execute() {
-            Ok(_) => (),
-            Err(e) => println!("{e}"),
+            Ok(_) => println!("Success : {}", cli.line),
+            Err(e) => println!("Error Happened to : {} {e}", cli.line),
         }
     }
     ""

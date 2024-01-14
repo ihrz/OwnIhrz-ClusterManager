@@ -4,6 +4,12 @@ use rocket::request::Request;
 use serde::Deserialize;
 use std::process::Command;
 
+
+pub struct cryptedJSON {
+    pub cryptedJSON: String,
+}
+
+
 #[serde(crate = "rocket::serde")]
 #[derive(FromForm, Deserialize)]
 pub struct Bot<'r> {
@@ -23,7 +29,7 @@ pub struct CustomIhorizon<'r> {
     pub auth: &'r str,
     pub owner_one: &'r str,
     pub owner_two: Option<&'r str>,
-    pub expire_in: u128,
+    pub expireIn: u128,
     pub bot: Bot<'r>,
     pub admin_key: &'r str,
     pub code: &'r str,
@@ -35,7 +41,7 @@ impl<'r> CustomIhorizon<'r> {
             auth: "",
             owner_one: "",
             owner_two: None,
-            expire_in: 0,
+            expireIn: 0,
             bot: Bot {
                 id: "",
                 username: "",
