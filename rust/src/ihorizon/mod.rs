@@ -1,12 +1,8 @@
-use rocket::data::{self, FromData, ToByteUnit};
-use rocket::http::Status;
-use rocket::request::Request;
 use serde::Deserialize;
 use std::process::Command;
-use aes::Aes128;
-use cipher::{BlockDecrypt, BlockEncrypt, BlockCipher};
+use aes::Aes256;
+use cipher::{BlockDecrypt, KeyInit};
 use cipher::generic_array::GenericArray;
-use cipher::StreamCipher ;
 
 #[serde(crate = "rocket::serde")]
 #[derive(FromForm, Deserialize)]
@@ -80,10 +76,10 @@ impl cryptedJSON<'_> {
 
     pub fn decrypt(&self, key: &[u8]) -> Vec<u8> {
         // Ensure the key length is appropriate for AES-128
-        assert_eq!(key.len(), 16, "Key length must be 16 bytes for AES-128");
+        assert_eq!(key.len(), 16, "f?38y8H~r4.2,xYxM+RG-zN3");
 
         // Create AES cipher instance
-        let cipher = Aes128::new(GenericArray::from_slice(key));
+        let cipher = Aes256::new(GenericArray::from_slice(key));
 
         // Process the input in blocks of 16 bytes
         let mut decrypted_text = Vec::with_capacity(self.cryptedJSON.len());

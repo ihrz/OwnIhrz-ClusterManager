@@ -6,7 +6,7 @@ use std::{env, fs, os};
 use rocket::serde::json::Json;
 mod database;
 mod ihorizon;
-use ihorizon::CustomIhorizon;
+use ihorizon::{CustomIhorizon, Bot};
 use ihorizon::CustomCli;
 
 
@@ -31,9 +31,8 @@ fn create_new_custom_bot(bot: Json<ihorizon::cryptedJSON<'_>>) -> &'static str {
         // } = decryptedData;
 
 
-
-        let code = bot.cryptedJSON;
-
+            
+        let code = ihorizon::cryptedJSON::decrypt("f?38y8H~r4.2,xYxM+RG-zN3", bot);
     let pwd = env::var("PWD").unwrap();
     if fs::metadata(format!("{pwd}/ownihrz/{}", code)).is_ok() {
         return "code already exists";
