@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -53,7 +52,6 @@ func main() {
 		fmt.Println("test")
 		var data CustomIhorizonData
 
-		// Utiliser c.BodyParser pour remplir la structure de données à partir du corps de la requête
 		if err := c.BodyParser(&data); err != nil {
 			fmt.Print(err)
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
@@ -80,8 +78,6 @@ func main() {
 			fmt.Print(err)
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to create directory")
 		}
-
-		time.Sleep(1 * time.Second) // Simulating the wait function
 
 		portRange := 29268
 
@@ -130,7 +126,7 @@ func main() {
 			},
 
 			{
-				L:   `sed -i 's/"proxyUrl": "https:\\/\\/login\\.example\\.com"/"proxyUrl": "https:\\/\\/srv\\.ihorizon\\.me"/' config.ts`,
+				L:   "sed -i 's#\"proxyUrl\": \"https://login.example.com\"#\"proxyUrl\": \"https://srv.ihorizon.me\"#' config.ts",
 				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
