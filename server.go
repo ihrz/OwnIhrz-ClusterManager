@@ -16,14 +16,14 @@ import (
 )
 
 type CustomIhorizonData struct {
-	AdminKey string `json:"admin_key"`
 	Auth     string `json:"auth"`
+	AdminKey string `json:"admin_key"`
 	OwnerOne string `json:"owner_one"`
 	OwnerTwo string `json:"owner_two"`
 	Bot      struct {
 		ID string `json:"id"`
 	} `json:"bot"`
-	ExpireIn string `json:"expireIn"`
+	ExpireIn int64  `json:"expireIn"`
 	Code     string `json:"code"`
 }
 
@@ -50,32 +50,34 @@ func main() {
 	})
 
 	app.Post("/api/publish", func(c *fiber.Ctx) error {
+		fmt.Println("test")
 		var data CustomIhorizonData
 
 		// Utiliser c.BodyParser pour remplir la structure de données à partir du corps de la requête
 		if err := c.BodyParser(&data); err != nil {
+			fmt.Print(err)
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
-		}
-
-		if err := c.BodyParser(&data); err != nil {
-			return err
 		}
 
 		config, err := loadConfig()
 		if err != nil {
+			fmt.Print(err)
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to load config")
 		}
 
 		if err != nil {
+			fmt.Print(err)
 			return c.Status(fiber.StatusInternalServerError).SendString("Decryption failed")
 		}
 
 		if !validateDecryptedData(&data, config) {
+			fmt.Println("Erreur")
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid data")
 		}
 
 		err = os.MkdirAll(filepath.Join(processCWD(), "ownihrz", data.Code), os.ModePerm)
 		if err != nil {
+			fmt.Print(err)
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to create directory")
 		}
 
@@ -89,20 +91,75 @@ func main() {
 		}{
 			{L: "git clone --branch ownihrz --depth 1 https://github.com/ihrz/ihrz.git .", CWD: pathResolve(processCWD(), "ownihrz", data.Code)},
 			{L: "mv src/files/config.example.ts src/files/config.ts", CWD: pathResolve(processCWD(), "ownihrz", data.Code)},
-			{L: strings.Replace(`sed -i 's/|| "The bot token",/|| "${Auth}",/g' config.ts`, "${Auth}", data.Auth, 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files")},
-			{L: strings.Replace(`sed -i 's/"The discord User ID of the Owner number One",/"${OwnerOne}",/' config.ts`, "${OwnerOne}", data.OwnerOne, 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files")},
-			{L: strings.Replace(`sed -i 's/"The discord User ID of the Owner number Two",/"${OwnerTwo}",/' config.ts`, "${OwnerTwo}", data.OwnerTwo, 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files")},
-			{L: strings.Replace(`sed -i 's/"login\.domain\.com"/"localhost"/' config.ts`, "${PortRange}", strconv.Itoa(portRange), 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files")},
-			{L: strings.Replace(`sed -i 's/"apiToken": "The API'"'"'s token for create a request (Need to be private for security reason)",/"apiToken": "${config.API.APIToken}",/' config.ts`, "${APIToken}", config.API.APIToken, 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files")},
-			{L: strings.Replace(`sed -i 's/"useProxy": false/"useProxy": true/' config.ts`, "${UseProxy}", "true", 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files")},
-			{L: strings.Replace(`sed -i 's/"proxyUrl": "https:\\/\\/login\\.example\\.com"/"proxyUrl": "${ProxyURL}"/' config.ts`, "${ProxyURL}", "https:\\/\\/srv\\.ihorizon\\.me", 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files")},
-			{L: strings.Replace(`sed -i 's/"The client ID of your application"/"${ClientID}"/' config.ts`, "${ClientID}", config.API.ClientID, 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files")},
-			{L: strings.Replace(`sed -i 's/"3000"/"${PortRange}"/' config.ts`, "${PortRange}", strconv.Itoa(portRange), 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files")},
-			{L: strings.Replace(`sed -i 's/"blacklistPictureInEmbed": "The image of the blacklist'\\''s Embed (When blacklisted user attempt to interact with the bot)",/"blacklistPictureInEmbed": "${BlacklistPictureInEmbed}",/' config.ts`, "${BlacklistPictureInEmbed}", "https:\\/\\/media.discordapp.net\\/attachments\\/1099043567659384942\\/1119214828330950706\\/image.png", 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files")},
-			{L: "cp -r ./node_modules/ ./ownihrz/${Code}/node_modules/", CWD: processCWD()},
-			{L: "npx tsc", CWD: pathResolve(processCWD(), "ownihrz", data.Code)},
-			{L: strings.Replace(`mv dist/index.js dist/${Code}.js`, "${Code}", data.Code, 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code)},
-			{L: strings.Replace(`pm2 start ./dist/${Code}.js -f`, "${Code}", data.Code, 1), CWD: pathResolve(processCWD(), "ownihrz", data.Code)},
+			{
+				L:   strings.Replace("sed -i 's/|| \"The bot token\",/|| \"{Auth}\",/g' config.ts", "{Auth}", data.Auth, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"The discord User ID of the Owner number One\",/\"{OwnerOne}\",/' config.ts", "{OwnerOne}", data.OwnerOne, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"The discord User ID of the Owner number Two\",/\"{OwnerTwo}\",/' config.ts", "{OwnerTwo}", data.OwnerTwo, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"login\\.domain\\.com\"/\"localhost\"/' config.ts", "{PortRange}", strconv.Itoa(portRange), 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"apiToken\": \"The API'\"'\"'s token for create a request (Need to be private for security reason)\",/\"apiToken\": \"{APIToken}\",/' config.ts", "{APIToken}", config.API.APIToken, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   "sed -i 's/\"useProxy\": false/\"useProxy\": true/' config.ts",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   "sed -i 's/\"proxyUrl\": \"https:\\/\\/login\\.example\\.com\" / \"proxyUrl\": \"https:\\/\\/srv\\.ihorizon\\.me\"/' config.ts",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"The client ID of your application\"/\"{ClientID}\"/' config.ts", "{ClientID}", config.API.ClientID, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/\"3000\"/\"{PortRange}\"/' config.ts", "{PortRange}", strconv.Itoa(portRange), 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   "sed -i 's/\"blacklistPictureInEmbed\": \"The image of the blacklist'\\''s Embed (When blacklisted user attempt to interact with the bot)\",/\"blacklistPictureInEmbed\": \"https:\\/\\/media.discordapp.net\\/attachments\\/1099043567659384942\\/1119214828330950706\\/image.png\",/' config.ts",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("cp -r ./node_modules/ ./ownihrz/{Code}/node_modules/", "{Code}", data.Code, 1),
+				CWD: processCWD(),
+			},
+
+			{
+				L:   "npx tsc",
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code),
+			},
+
+			{
+				L:   strings.Replace(`mv dist/index.js dist/{Code}.js`, "{Code}", data.Code, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code),
+			},
+
+			{
+				L:   strings.Replace(`pm2 start ./dist/{Code}.js -f`, "{Code}", data.Code, 1),
+				CWD: pathResolve(processCWD(), "ownihrz", data.Code),
+			},
 		}
 
 		for _, index := range cliArray {
@@ -111,6 +168,7 @@ func main() {
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err != nil {
+				fmt.Print(err)
 				return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 			}
 		}
@@ -143,10 +201,10 @@ func loadConfig() (*Config, error) {
 }
 
 func validateDecryptedData(data *CustomIhorizonData, config *Config) bool {
-	return data.Auth == config.API.APIToken &&
+	return data.AdminKey == config.API.APIToken &&
 		data.OwnerOne != "" &&
 		data.OwnerTwo != "" &&
-		data.ExpireIn != "" &&
+		data.ExpireIn != 0 &&
 		data.Bot.ID != "" &&
 		data.Code != ""
 }
