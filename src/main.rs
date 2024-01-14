@@ -10,10 +10,6 @@ use ihorizon::CustomIhorizon;
 use ihorizon::CustomCli;
 
 
-use crypto::aes;
-use crypto::blockmodes::NoPadding;
-use crypto::buffer::{ReadBuffer, WriteBuffer, BufferResult};
-
 #[post("/new_ihorizon", data = "<bot>")]
 fn create_new_custom_bot(bot: Json<ihorizon::cryptedJSON<'_>>) -> &'static str {
 
@@ -34,16 +30,9 @@ fn create_new_custom_bot(bot: Json<ihorizon::cryptedJSON<'_>>) -> &'static str {
         //     code
         // } = decryptedData;
 
-    
-    let decrypted_data = decrypt_data(&bot);
 
-        // Utilisation des données décryptées
-        let admin_key = decrypted_data.admin_key;
-        let auth = decrypted_data.auth;
-        let owner_one = decrypted_data.owner_one;
-        let owner_two = decrypted_data.owner_two.unwrap_or_else(|| &"0".to_string());
-        let code = decrypted_data.code;
-        let bot_id = decrypted_data.bot.id;
+
+        let code = bot.cryptedJSON;
 
     let pwd = env::var("PWD").unwrap();
     if fs::metadata(format!("{pwd}/ownihrz/{}", code)).is_ok() {
@@ -140,30 +129,3 @@ TYPING:
   code: string
 }
 */
-
-// Fonction pour décrypter les données
-fn decrypt_data(bot: &Json<ihorizon::CustomIhorizon<'_>>) -> ihorizon::CustomIhorizon {
-    // La clé de chiffrement, remplacez-la par votre clé réelle
-    let encryption_key = b"your_encryption_key";
-
-    // Obtenez les données chiffrées depuis le JSON
-    let encrypted_data = base64::decode(&bot.cryptedJSON).expect("Failed to decode base64");
-
-    // Déchiffrez les données
-    let mut decryptor = aes::cbc_decryptor(aes::KeySize::KeySize128, encryption_key, &[0; 16], NoPadding);
-    let mut decrypted_data = Vec::new();
-    let mut read_buffer = crypto::buffer::RefReadBuffer::new(&encrypted_data);
-    let mut write_buffer = crypto::buffer::RefWriteBuffer::new(&mut decrypted_data);
-
-    decryptor
-        .decrypt(&mut read_buffer, &mut write_buffer, true)
-        .expect("Decryption failed");
-
-    // Convertissez les données décryptées en String
-    let decrypted_str = String::from_utf8(decrypted_data).expect("Failed to convert to String");
-
-    // Désérialisez les données en CustomIhorizonData
-    let result: CustomIhorizon = serde_json::from_str(&decrypted_str).expect("Failed to deserialize JSON");
-
-    result
-}
