@@ -5,11 +5,14 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	aeshelper "server/aes_helper"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -29,10 +32,14 @@ type CustomIhorizonData struct {
 	Code     string `json:"code"`
 }
 
+type APIConfig struct {
+	APIToken string `mapstructure:"apiToken"`
+	ClientID string `mapstructure:"clientID"`
+}
+
 type Config struct {
-	API struct {
-		APIToken string `mapstructure:"apiToken"`
-	} `mapstructure:"api"`
+	API APIConfig `mapstructure:"api"`
+	// Ajoute d'autres champs si nécessaire
 }
 
 func main() {
@@ -54,18 +61,30 @@ func main() {
 		}
 
 		cryptedJSON, ok := data["cryptedJSON"].(string)
+
 		if !ok {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid cryptedJSON")
-		}
-
-		decryptedData, err := decryptData(cryptedJSON)
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).SendString("Decryption failed")
 		}
 
 		config, err := loadConfig()
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to load config")
+		}
+
+		/*
+			Start of decrypting
+		*/
+		decrypted := aeshelper.Decrypt(cryptedJSON, config.API.APIToken)
+		fmt.Printf("decrypted : \n\n\n%s", decrypted)
+
+		decryptedData, err := decryptData(cryptedJSON)
+
+		/*
+			End of decrypting
+		*/
+
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Decryption failed")
 		}
 
 		if !validateDecryptedData(decryptedData, config) {
@@ -87,20 +106,20 @@ func main() {
 		}{
 			{L: "git clone --branch ownihrz --depth 1 https://github.com/ihrz/ihrz.git .", CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code)},
 			{L: "mv src/files/config.example.ts src/files/config.ts", CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code)},
-			{L: `sed -i 's/|| "The bot token",/|| "${decryptedData.Auth}",/g' config.ts`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
-			{L: `sed -i 's/"The discord User ID of the Owner number One",/"${decryptedData.OwnerOne}",/' config.ts`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
-			{L: `sed -i 's/"The discord User ID of the Owner number Two",/"${decryptedData.OwnerTwo}",/' config.ts`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
-			{L: `sed -i 's/"login\.domain\.com"/"localhost"/' config.ts`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
-			{L: `sed -i 's/"apiToken": "The API'"'"'s token for create a request (Need to be private for security reason)",/"apiToken": "${config.API.APIToken}",/' config.ts`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
-			{L: `sed -i 's/"useProxy": false/"useProxy": true/' config.ts`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
-			{L: `sed -i 's/"proxyUrl": "https:\\/\\/login\\.example\\.com"/"proxyUrl": "https:\\/\\/srv\\.ihorizon\\.me"/' config.ts`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
-			{L: `sed -i 's/"The client ID of your application"/"${config.API.ClientID}"/' config.ts`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
-			{L: `sed -i 's/"3000"/"${portRange}"/' config.ts`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
-			{L: `sed -i 's/"blacklistPictureInEmbed": "The image of the blacklist'\\''s Embed (When blacklisted user attempt to interact with the bot)",/"blacklistPictureInEmbed": "https:\\/\\/media.discordapp.net\\/attachments\\/1099043567659384942\\/1119214828330950706\\/image.png",/' config.ts`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
-			{L: `cp -r ./node_modules/ ./ownihrz/${decryptedData.Code}/node_modules/`, CWD: processCWD()},
+			{L: strings.Replace(`sed -i 's/|| "The bot token",/|| "${Auth}",/g' config.ts`, "${Auth}", decryptedData.Auth, 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
+			{L: strings.Replace(`sed -i 's/"The discord User ID of the Owner number One",/"${OwnerOne}",/' config.ts`, "${OwnerOne}", decryptedData.OwnerOne, 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
+			{L: strings.Replace(`sed -i 's/"The discord User ID of the Owner number Two",/"${OwnerTwo}",/' config.ts`, "${OwnerTwo}", decryptedData.OwnerTwo, 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
+			{L: strings.Replace(`sed -i 's/"login\.domain\.com"/"localhost"/' config.ts`, "${PortRange}", strconv.Itoa(portRange), 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
+			{L: strings.Replace(`sed -i 's/"apiToken": "The API'"'"'s token for create a request (Need to be private for security reason)",/"apiToken": "${config.API.APIToken}",/' config.ts`, "${APIToken}", config.API.APIToken, 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
+			{L: strings.Replace(`sed -i 's/"useProxy": false/"useProxy": true/' config.ts`, "${UseProxy}", "true", 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
+			{L: strings.Replace(`sed -i 's/"proxyUrl": "https:\\/\\/login\\.example\\.com"/"proxyUrl": "${ProxyURL}"/' config.ts`, "${ProxyURL}", "https:\\/\\/srv\\.ihorizon\\.me", 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
+			{L: strings.Replace(`sed -i 's/"The client ID of your application"/"${ClientID}"/' config.ts`, "${ClientID}", config.API.ClientID, 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
+			{L: strings.Replace(`sed -i 's/"3000"/"${PortRange}"/' config.ts`, "${PortRange}", strconv.Itoa(portRange), 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
+			{L: strings.Replace(`sed -i 's/"blacklistPictureInEmbed": "The image of the blacklist'\\''s Embed (When blacklisted user attempt to interact with the bot)",/"blacklistPictureInEmbed": "${BlacklistPictureInEmbed}",/' config.ts`, "${BlacklistPictureInEmbed}", "https:\\/\\/media.discordapp.net\\/attachments\\/1099043567659384942\\/1119214828330950706\\/image.png", 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code, "src", "files")},
+			{L: "cp -r ./node_modules/ ./ownihrz/${Code}/node_modules/", CWD: processCWD()},
 			{L: "npx tsc", CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code)},
-			{L: `mv dist/index.js dist/${decryptedData.Code}.js`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code)},
-			{L: `pm2 start ./dist/${decryptedData.Code}.js -f`, CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code)},
+			{L: strings.Replace(`mv dist/index.js dist/${Code}.js`, "${Code}", decryptedData.Code, 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code)},
+			{L: strings.Replace(`pm2 start ./dist/${Code}.js -f`, "${Code}", decryptedData.Code, 1), CWD: pathResolve(processCWD(), "ownihrz", decryptedData.Code)},
 		}
 
 		for _, index := range cliArray {
@@ -125,7 +144,11 @@ func main() {
 }
 
 func decryptData(cryptedJSON string) (*CustomIhorizonData, error) {
-	key := []byte("your_encryption_key") // Replace with your actual encryption key
+	config, err := loadConfig()
+
+	fmt.Println(config.API.APIToken)
+	key := []byte(config.API.APIToken)
+
 	ciphertext, err := base64.StdEncoding.DecodeString(cryptedJSON)
 	if err != nil {
 		return nil, err
@@ -136,13 +159,11 @@ func decryptData(cryptedJSON string) (*CustomIhorizonData, error) {
 		return nil, err
 	}
 
-	if len(ciphertext) < aes.BlockSize {
-		return nil, errors.New("ciphertext too short")
-	}
-
+	// IV est maintenant extrait du texte chiffré
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]
 
+	// Utilise l'IV lors de la création du déchiffreur
 	mode := cipher.NewCBCDecrypter(block, iv)
 	mode.CryptBlocks(ciphertext, ciphertext)
 
@@ -151,6 +172,8 @@ func decryptData(cryptedJSON string) (*CustomIhorizonData, error) {
 	ciphertext = ciphertext[:len(ciphertext)-padding]
 
 	var decryptedData CustomIhorizonData
+	fmt.Println(decryptedData)
+
 	err = json.Unmarshal(ciphertext, &decryptedData)
 	if err != nil {
 		return nil, err
@@ -164,8 +187,10 @@ func loadConfig() (*Config, error) {
 	viper.SetConfigFile("config.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
+		fmt.Println("Error reading config file:", err)
 		return nil, err
 	}
+
 	err = viper.Unmarshal(&config)
 	if err != nil {
 		return nil, err
