@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate rocket;
 use serde::Deserialize;
+use std::fmt::format;
 use std::{env, fs, os};
 use rocket::serde::{json::Json};
 mod database;
@@ -58,6 +59,14 @@ fn create_new_custom_bot(bot: Json<ihorizon::CustomIhorizon<'_>>) -> &'static st
             line: format!(r#"sed -i 's/"3000"/"{}"/' config.ts"#, 29268), // hard codée le port
             pwd: format!("{pwd}/ownihrz/{}/src/files", code),
         },
+        CustomCli {
+            line: format!("sed -i 's/\"blacklistPictureInEmbed\": \"The image of the blacklist'\\''s Embed (When blacklisted user attempt to interact with the bot)\",\"blacklistPictureInEmbed\": \"https:\\/\\/media.discordapp.net\\/attachments\\/1099043567659384942\\/1119214828330950706\\/image.png\",/' config.ts"),
+            pwd: format!("{pwd}"),
+        },
+        CustomCli {
+            line: format!("cp -r ./node_modules/ ./ownihrz/{code}/node_modules/"),
+            pwd: format!("{pwd}"),
+        },
         CustomCli {  
             line: "npx tsc".to_string(),
             pwd: format!("{pwd}/ownihrz/{}/src", code),
@@ -85,7 +94,7 @@ fn create_new_custom_bot(bot: Json<ihorizon::CustomIhorizon<'_>>) -> &'static st
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![hello, jesuismagnifique])
+    rocket::build().mount("/", routes![create_new_custom_bot])
 }
 
 /*
