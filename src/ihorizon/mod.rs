@@ -3,10 +3,15 @@ use rocket::http::Status;
 use rocket::request::Request;
 use serde::Deserialize;
 use std::process::Command;
+use aes::Aes128;
+use cipher::{BlockDecrypt, BlockEncrypt, BlockCipher};
+use cipher::generic_array::GenericArray;
+use cipher::StreamCipher ;
 
-
-pub struct cryptedJSON {
-    pub cryptedJSON: String,
+#[serde(crate = "rocket::serde")]
+#[derive(FromForm, Deserialize)]
+pub struct cryptedJSON<'r> {
+    pub cryptedJSON: &'r str,
 }
 
 
@@ -65,4 +70,35 @@ impl CustomCli {
             .current_dir(&self.pwd)
             .output()
     }
+}
+
+
+impl cryptedJSON<'_> {
+    pub fn new(cryptedJSON: &str) -> Self {
+        Self { cryptedJSON }
+    }
+
+    pub fn decrypt(&self, key: &[u8]) -> Vec<u8> {
+        // Ensure the key length is appropriate for AES-128
+        assert_eq!(key.len(), 16, "Key length must be 16 bytes for AES-128");
+
+        // Create AES cipher instance
+        let cipher = Aes128::new(GenericArray::from_slice(key));
+
+        // Process the input in blocks of 16 bytes
+        let mut decrypted_text = Vec::with_capacity(self.cryptedJSON.len());
+        for chunk in self.cryptedJSON.as_bytes().chunks_exact(16) {
+            // Create a block to hold the encrypted data
+            let mut block = GenericArray::clone_from_slice(chunk);
+
+            // Decrypt the block
+            cipher.decrypt_block(&mut block);
+
+            // Append the decrypted block to the result
+            decrypted_text.extend_from_slice(&block);
+        }
+
+        decrypted_text
+    }
+
 }

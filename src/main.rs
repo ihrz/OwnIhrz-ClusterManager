@@ -3,40 +3,48 @@ extern crate rocket;
 use serde::Deserialize;
 use std::fmt::format;
 use std::{env, fs, os};
-use rocket::serde::{json::Json};
+use rocket::serde::json::Json;
 mod database;
 mod ihorizon;
 use ihorizon::CustomIhorizon;
 use ihorizon::CustomCli;
 
-// use crypto::aes;
-// use crypto::blockmodes::NoPadding;
-// use crypto::buffer::{ReadBuffer, WriteBuffer, BufferResult};
+
+use crypto::aes;
+use crypto::blockmodes::NoPadding;
+use crypto::buffer::{ReadBuffer, WriteBuffer, BufferResult};
 
 #[post("/new_ihorizon", data = "<bot>")]
-fn create_new_custom_bot(bot: Json<ihorizon::CustomIhorizon<'_>>) -> &'static str {
+fn create_new_custom_bot(bot: Json<ihorizon::cryptedJSON<'_>>) -> &'static str {
 
     // a coder: 
 
-    /*
+        // let { cryptedJSON } = req.body;
+
+        // var bytes = CryptoJS.AES.decrypt(cryptedJSON, config.api.apiToken);
+        // var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+        // let {
+        //     admin_key,
+        //     auth,
+        //     owner_one,
+        //     owner_two,
+        //     bot,
+        //     expireIn,
+        //     code
+        // } = decryptedData;
+
     
-        let { cryptedJSON } = req.body;
+    let decrypted_data = decrypt_data(&bot);
 
-        var bytes = CryptoJS.AES.decrypt(cryptedJSON, config.api.apiToken);
-        var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+        // Utilisation des données décryptées
+        let admin_key = decrypted_data.admin_key;
+        let auth = decrypted_data.auth;
+        let owner_one = decrypted_data.owner_one;
+        let owner_two = decrypted_data.owner_two.unwrap_or_else(|| &"0".to_string());
+        let code = decrypted_data.code;
+        let bot_id = decrypted_data.bot.id;
 
-        let {
-            admin_key,
-            auth,
-            owner_one,
-            owner_two,
-            bot,
-            expireIn,
-            code
-        } = decryptedData;
-
-     */
-    let code = bot.code;
     let pwd = env::var("PWD").unwrap();
     if fs::metadata(format!("{pwd}/ownihrz/{}", code)).is_ok() {
         return "code already exists";
@@ -52,23 +60,23 @@ fn create_new_custom_bot(bot: Json<ihorizon::CustomIhorizon<'_>>) -> &'static st
             pwd: format!("{pwd}/ownihrz/{}", code),
         },
         CustomCli {
-            line: format!(r#"sed -i 's/|| "The bot token",/|| "{}",/g' config.ts"#, bot.auth), // jsp pour le autg
+            line: format!(r#"sed -i 's/|| "The bot token",/|| "{}",/g' config.ts"#, auth), // jsp pour le autg
             pwd: format!("{pwd}/ownihrz/{}/src/files", code),
         },
         CustomCli {
-            line: format!(r#"sed -i 's/"The discord User ID of the Owner number One",/"{}",/' config.ts"#, bot.owner_one),
+            line: format!(r#"sed -i 's/"The discord User ID of the Owner number One",/"{}",/' config.ts"#, owner_one),
             pwd: format!("{pwd}/ownihrz/{}/src/files", code),
         },
         CustomCli {
-            line: format!(r#"sed -i 's/"The discord User ID of the Owner number Two",/"{}",/' config.ts"#, if let Some(owner_two) = bot.owner_two { owner_two } else { "0"}),
+            line: format!(r#"sed -i 's/"The discord User ID of the Owner number Two",/"{}",/' config.ts"#, if let Some(owner_two) = owner_two { owner_two } else { "0"}),
             pwd: format!("{pwd}/ownihrz/{}/src/files", code),
         },
         CustomCli {
-            line: format!(r#"sed -i 's/"The API'"'"'s token for create a request (Need to be private for security reason)",/"{}",/' config.ts"#, bot.auth), // pas le bon parametre
+            line: format!(r#"sed -i 's/"The API'"'"'s token for create a request (Need to be private for security reason)",/"{}",/' config.ts"#, auth), // pas le bon parametre
             pwd: format!("{pwd}/ownihrz/{}/src/files", code),
         },
         CustomCli {
-            line: format!(r#"sed -i 's/"The client ID of your application"/"{}"/' config.ts"#, bot.bot.id),
+            line: format!(r#"sed -i 's/"The client ID of your application"/"{}"/' config.ts"#, bot_id),
             pwd: format!("{pwd}/ownihrz/{}/src/files", code),
         },
         CustomCli {
@@ -116,19 +124,6 @@ fn rocket() -> _ {
 /*
 DB= DB IHORIZON WITH URL
 
-{
-  auth: 'MTE1OTQ2NDE5Njk1ODg1NTE5OQ.G-ndtx.ah1hmhco220YJZBraeAJk1OHjboMLIXhvqKdfM',
-  owner_one: '171356978310938624',
-  owner_two: '761966322497880084',
-  expireIn: 1707768742275,
-  bot: {
-    id: '1159464196958855199',
-    username: 'OwnIhrz example',
-    public: true
-  },
-  admin_key: 'f?38y8H~r4.2,xYxM+RG-zN3',
-  code: '47dqpgvnp9'
-}
 TYPING:
 
 {
@@ -146,29 +141,29 @@ TYPING:
 }
 */
 
-// // Fonction pour décrypter les données
-// fn decrypt_data(bot: &Json<ihorizon::CustomIhorizon<'_>>) -> ihorizon::CustomIhorizon {
-//     // La clé de chiffrement, remplacez-la par votre clé réelle
-//     let encryption_key = b"your_encryption_key";
+// Fonction pour décrypter les données
+fn decrypt_data(bot: &Json<ihorizon::CustomIhorizon<'_>>) -> ihorizon::CustomIhorizon {
+    // La clé de chiffrement, remplacez-la par votre clé réelle
+    let encryption_key = b"your_encryption_key";
 
-//     // Obtenez les données chiffrées depuis le JSON
-//     let encrypted_data = base64::decode(&bot.cryptedJSON).expect("Failed to decode base64");
+    // Obtenez les données chiffrées depuis le JSON
+    let encrypted_data = base64::decode(&bot.cryptedJSON).expect("Failed to decode base64");
 
-//     // Déchiffrez les données
-//     let mut decryptor = aes::cbc_decryptor(aes::KeySize::KeySize128, encryption_key, &[0; 16], NoPadding);
-//     let mut decrypted_data = Vec::new();
-//     let mut read_buffer = crypto::buffer::RefReadBuffer::new(&encrypted_data);
-//     let mut write_buffer = crypto::buffer::RefWriteBuffer::new(&mut decrypted_data);
+    // Déchiffrez les données
+    let mut decryptor = aes::cbc_decryptor(aes::KeySize::KeySize128, encryption_key, &[0; 16], NoPadding);
+    let mut decrypted_data = Vec::new();
+    let mut read_buffer = crypto::buffer::RefReadBuffer::new(&encrypted_data);
+    let mut write_buffer = crypto::buffer::RefWriteBuffer::new(&mut decrypted_data);
 
-//     decryptor
-//         .decrypt(&mut read_buffer, &mut write_buffer, true)
-//         .expect("Decryption failed");
+    decryptor
+        .decrypt(&mut read_buffer, &mut write_buffer, true)
+        .expect("Decryption failed");
 
-//     // Convertissez les données décryptées en String
-//     let decrypted_str = String::from_utf8(decrypted_data).expect("Failed to convert to String");
+    // Convertissez les données décryptées en String
+    let decrypted_str = String::from_utf8(decrypted_data).expect("Failed to convert to String");
 
-//     // Désérialisez les données en CustomIhorizonData
-//     let result: CustomIhorizonData = serde_json::from_str(&decrypted_str).expect("Failed to deserialize JSON");
+    // Désérialisez les données en CustomIhorizonData
+    let result: CustomIhorizon = serde_json::from_str(&decrypted_str).expect("Failed to deserialize JSON");
 
-//     result
-// }
+    result
+}
