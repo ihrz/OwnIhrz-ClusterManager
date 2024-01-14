@@ -17,7 +17,6 @@ import (
 func CreateContainer(app *fiber.App) {
 
 	app.Post("/api/instance/create", func(c *fiber.Ctx) error {
-		fmt.Println("test")
 		var data structure.CustomIhorizonData
 
 		if err := c.BodyParser(&data); err != nil {
