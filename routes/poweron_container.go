@@ -10,20 +10,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func StartContainer(app *fiber.App) {
+func PowerOnContainer(app *fiber.App) {
 
-	app.Get("/api/instance/start/:bot_id/:admin_key/", func(c *fiber.Ctx) error {
+	app.Get("/api/instance/poweron/:bot_id/:admin_key/", func(c *fiber.Ctx) error {
 
 		var bot_id = c.Params("bot_id")
 		var admin_key = c.Params("admin_key")
 
 		if !method.ValidateAdminKey(admin_key) {
-			fmt.Println("[Start] Erreur admin_key", admin_key, " n'est pas valide!")
+			fmt.Println("[PowerOn] Erreur admin_key", admin_key, " n'est pas valide!")
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid admin_key!")
 		}
 
 		if _, err := os.Stat(method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id)); os.IsNotExist(err) {
-			fmt.Println("[Start] Erreur bot_id", bot_id, " n'existe pas!")
+			fmt.Println("[PowerOn] Erreur bot_id", bot_id, " n'existe pas!")
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid bot_id!")
 		}
 
@@ -31,26 +31,6 @@ func StartContainer(app *fiber.App) {
 			L   string
 			CWD string
 		}{
-			{
-				L:   "rm -r dist",
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
-			},
-
-			{
-				L:   "git pull",
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
-			},
-
-			{
-				L:   "npx tsc",
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
-			},
-
-			{
-				L:   strings.Replace("mv dist/index.js dist/{Code}.js", "{Code}", bot_id, 1),
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
-			},
-
 			{
 				L:   strings.Replace("pm2 start dist/{Code}.js -f", "{Code}", bot_id, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),

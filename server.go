@@ -22,8 +22,9 @@ func main() {
 
 	routes.CreateContainer(app)
 	routes.DeleteContainer(app)
-	routes.StartContainer(app)
-	routes.StopContainer(app)
+	routes.StartupContainer(app)
+	routes.PowerOnContainer(app)
+	routes.ShutdownContainer(app)
 
 	log.Fatal(app.Listen(":3000"))
 }
