@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"server/method"
+	"server/method/db"
 	"server/structure"
 	"strconv"
 	"strings"
@@ -144,7 +145,8 @@ func CreateContainer(app *fiber.App) {
 			}
 		}
 
-		// err = setDatabaseEntry(data, portRange)
+		db.Set(data.Code+"_online", true)
+
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
@@ -152,9 +154,4 @@ func CreateContainer(app *fiber.App) {
 		return nil
 	})
 
-}
-
-func setDatabaseEntry(data *structure.CustomIhorizonData, portRange int) error {
-	// Implement your logic to set data into the database
-	return nil
 }

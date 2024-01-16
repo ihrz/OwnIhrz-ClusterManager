@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"server/method"
+	"server/method/db"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -27,30 +28,39 @@ func ShutdownContainer(app *fiber.App) {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid bot_id!")
 		}
 
-		cliArray := []struct {
-			L   string
-			CWD string
-		}{
-			{
-				L:   strings.Replace("pm2 stop {Code}", "{Code}", bot_id, 1),
-				CWD: method.ProcessCWD(),
-			},
+		var IsOn = db.Get(bot_id + "_online")
 
-			{
-				L:   strings.Replace("pm2 delete {Code}", "{Code}", bot_id, 1),
-				CWD: method.ProcessCWD(),
-			},
-		}
+		if IsOn {
 
-		for _, index := range cliArray {
-			cmd := exec.Command("sh", "-c", index.L)
-			cmd.Dir = index.CWD
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err != nil {
-				fmt.Print(err)
-				return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+			cliArray := []struct {
+				L   string
+				CWD string
+			}{
+				{
+					L:   strings.Replace("pm2 stop {Code}", "{Code}", bot_id, 1),
+					CWD: method.ProcessCWD(),
+				},
+
+				{
+					L:   strings.Replace("pm2 delete {Code}", "{Code}", bot_id, 1),
+					CWD: method.ProcessCWD(),
+				},
 			}
+
+			for _, index := range cliArray {
+				cmd := exec.Command("sh", "-c", index.L)
+				cmd.Dir = index.CWD
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				if err := cmd.Run(); err != nil {
+					fmt.Print(err)
+					return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+				}
+			}
+
+			db.Set(bot_id+"_online", false)
+		} else {
+			fmt.Println("[Shutdown] Erreur tentative doublon!")
 		}
 
 		return c.SendStatus(200)

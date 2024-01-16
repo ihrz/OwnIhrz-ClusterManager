@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"server/method"
+	"server/method/db"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -27,45 +28,54 @@ func StartupContainer(app *fiber.App) {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid bot_id!")
 		}
 
-		cliArray := []struct {
-			L   string
-			CWD string
-		}{
-			{
-				L:   "rm -r dist",
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
-			},
+		var IsOn = db.Get(bot_id + "_online")
 
-			{
-				L:   "git pull",
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
-			},
+		if !IsOn {
 
-			{
-				L:   "npx tsc",
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
-			},
+			cliArray := []struct {
+				L   string
+				CWD string
+			}{
+				{
+					L:   "rm -r dist",
+					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
+				},
 
-			{
-				L:   strings.Replace("mv dist/index.js dist/{Code}.js", "{Code}", bot_id, 1),
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
-			},
+				{
+					L:   "git pull",
+					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
+				},
 
-			{
-				L:   strings.Replace("pm2 start dist/{Code}.js -f", "{Code}", bot_id, 1),
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
-			},
-		}
+				{
+					L:   "npx tsc",
+					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
+				},
 
-		for _, index := range cliArray {
-			cmd := exec.Command("sh", "-c", index.L)
-			cmd.Dir = index.CWD
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err != nil {
-				fmt.Print(err)
-				return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+				{
+					L:   strings.Replace("mv dist/index.js dist/{Code}.js", "{Code}", bot_id, 1),
+					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
+				},
+
+				{
+					L:   strings.Replace("pm2 start dist/{Code}.js -f", "{Code}", bot_id, 1),
+					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
+				},
 			}
+
+			for _, index := range cliArray {
+				cmd := exec.Command("sh", "-c", index.L)
+				cmd.Dir = index.CWD
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				if err := cmd.Run(); err != nil {
+					fmt.Print(err)
+					return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+				}
+			}
+
+			db.Set(bot_id+"_online", true)
+		} else {
+			fmt.Println("[Startup] Erreur Erreur tentative doublon!")
 		}
 
 		return c.SendStatus(200)
