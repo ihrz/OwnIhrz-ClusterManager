@@ -42,8 +42,8 @@ func DeleteContainer(app *fiber.App) {
 			},
 
 			{
-				L:   "rm -rf *",
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
+				L:   strings.Replace("rm {Code} -r", "{Code}", bot_id, 1),
+				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz"),
 			},
 		}
 
