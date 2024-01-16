@@ -1,13 +1,15 @@
 package structure
 
 type CustomIhorizonData struct {
-	Auth     string `json:"auth"`
-	AdminKey string `json:"admin_key"`
-	OwnerOne string `json:"owner_one"`
-	OwnerTwo string `json:"owner_two"`
+	Auth     string `json:"Auth"`
+	AdminKey string `json:"AdminKey"`
+	OwnerOne string `json:"OwnerOne"`
+	OwnerTwo string `json:"OwnerTwo"`
 	Bot      struct {
-		ID string `json:"id"`
-	} `json:"bot"`
-	ExpireIn int64  `json:"expireIn"`
-	Code     string `json:"code"`
+		ID     string `json:"Id"`
+		Name   string `json:"Name"`
+		Public bool   `json:"Public"`
+	} `json:"Bot"`
+	ExpireIn int64  `json:"ExpireIn"`
+	Code     string `json:"Code"`
 }
