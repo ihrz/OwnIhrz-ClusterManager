@@ -31,11 +31,6 @@ func CreateContainer(app *fiber.App) {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to load config")
 		}
 
-		if err != nil {
-			fmt.Print(err)
-			return c.Status(fiber.StatusInternalServerError).SendString("Decryption failed")
-		}
-
 		if !method.ValidateDecryptedData(&data, config) {
 			fmt.Println("Erreur")
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid data")
