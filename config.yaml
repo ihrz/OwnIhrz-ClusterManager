@@ -5,3 +5,7 @@ cluster:
 api:
   apiToken: "api token of iHorizon"
   clientID: "bot's ID of The bot"
+
+container:
+  githubRepo: ""
+  branchName: ""

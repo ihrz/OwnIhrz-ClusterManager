@@ -44,12 +44,16 @@ func CreateContainer(app *fiber.App) {
 
 		portRange := 29268
 
+		var GitCloneCommand = "git clone --branch {branchName} --depth 1 {repoName} ."
+		GitCloneCommandFormated := strings.Replace(GitCloneCommand, "{branchName}", config.Container.BranchName, 1)
+		GitCloneCommandFormated = strings.Replace(GitCloneCommandFormated, "{repoName}", config.Container.GithubRepo, 1)
+
 		cliArray := []struct {
 			L   string
 			CWD string
 		}{
 			{
-				L:   "git clone --branch ownihrz --depth 1 https://github.com/ihrz/ihrz.git .",
+				L:   GitCloneCommandFormated,
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code),
 			},
 

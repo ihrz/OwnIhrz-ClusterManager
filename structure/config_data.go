@@ -10,7 +10,13 @@ type Cluster struct {
 	MaxCluster int    `mapstructure:"max_container"`
 }
 
+type Container struct {
+	GithubRepo string `mapstructure:"githubRepo"`
+	BranchName string `mapstructure:"branchName"`
+}
+
 type Config struct {
-	API     APIConfig `mapstructure:"api"`
-	Cluster Cluster   `mapstructure:"cluster"`
+	API       APIConfig `mapstructure:"api"`
+	Cluster   Cluster   `mapstructure:"cluster"`
+	Container Container `mapstructure:"container"`
 }
