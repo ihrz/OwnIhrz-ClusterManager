@@ -113,8 +113,8 @@ func CreateContainer(app *fiber.App) {
 			},
 
 			{
-				L:   strings.Replace("cp -r ./node_modules/ ./ownihrz/{Code}/node_modules/", "{Code}", data.Code, 1),
-				CWD: method.ProcessCWD(),
+				L:   "bun install",
+				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code),
 			},
 
 			{
