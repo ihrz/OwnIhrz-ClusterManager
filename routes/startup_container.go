@@ -57,6 +57,11 @@ func StartupContainer(app *fiber.App) {
 				},
 
 				{
+					L:   "bun install",
+					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
+				},
+
+				{
 					L:   strings.Replace("pm2 start dist/{Code}.js -f", "{Code}", bot_id, 1),
 					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
 				},
