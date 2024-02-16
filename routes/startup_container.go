@@ -47,17 +47,17 @@ func StartupContainer(app *fiber.App) {
 				},
 
 				{
+					L:   "bun install",
+					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
+				},
+
+				{
 					L:   "npx tsc",
 					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
 				},
 
 				{
 					L:   strings.Replace("mv dist/index.js dist/{Code}.js", "{Code}", bot_id, 1),
-					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
-				},
-
-				{
-					L:   "bun install",
 					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
 				},
 
