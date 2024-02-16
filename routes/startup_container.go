@@ -37,7 +37,7 @@ func StartupContainer(app *fiber.App) {
 				CWD string
 			}{
 				{
-					L:   "rm -r dist",
+					L:   "rm -f -r dist",
 					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
 				},
 
