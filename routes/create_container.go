@@ -56,7 +56,7 @@ func CreateContainer(app *fiber.App) {
 			},
 
 			{
-				L:   "bun install",
+				L:   "yarn",
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code),
 			},
 
