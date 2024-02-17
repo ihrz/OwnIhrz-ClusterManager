@@ -1,7 +1,8 @@
 cluster:
   name: "cluster0"
   max_container: 10
-  
+  port: "3450"
+
 api:
   apiToken: "api token of iHorizon"
   clientID: "bot's ID of The bot"

@@ -44,16 +44,14 @@ func CreateContainer(app *fiber.App) {
 
 		portRange := 29268
 
-		var GitCloneCommand = "git clone --branch {branchName} --depth 1 {repoName} ."
-		GitCloneCommandFormated := strings.Replace(GitCloneCommand, "{branchName}", config.Container.BranchName, 1)
-		GitCloneCommandFormated = strings.Replace(GitCloneCommandFormated, "{repoName}", config.Container.GithubRepo, 1)
+		GitCloneCommandFormated := strings.Replace("git clone --branch {branchName} --depth 1 {repoName} .", "{branchName}", config.Container.BranchName, 1)
 
 		cliArray := []struct {
 			L   string
 			CWD string
 		}{
 			{
-				L:   GitCloneCommandFormated,
+				L:   strings.Replace(GitCloneCommandFormated, "{repoName}", config.Container.GithubRepo, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code),
 			},
 
@@ -73,22 +71,17 @@ func CreateContainer(app *fiber.App) {
 			},
 
 			{
-				L:   strings.Replace("sed -i 's/ownerid1: \"User id\",/ownerid1: \"${OwnerOne}\",/' config.ts", "{OwnerOne}", data.OwnerOne, 1),
+				L:   strings.Replace("sed -i 's/ownerid1: \"User id\",/ownerid1: \"{OwnerOne}\",/' config.ts", "{OwnerOne}", data.OwnerOne, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
 			{
-				L:   strings.Replace("sed -i 's/ownerid2: \"User id\",/ownerid2: \"${OwnerTwo}\",/' config.ts", "{OwnerTwo}", data.OwnerTwo, 1),
+				L:   strings.Replace("sed -i 's/ownerid2: \"User id\",/ownerid2: \"{OwnerTwo}\",/' config.ts", "{OwnerTwo}", data.OwnerTwo, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
-			// {
-			// 	L:   strings.Replace("sed -i 's/\"login\\.domain\\.com\"/\"localhost\"/' config.ts", "{PortRange}", strconv.Itoa(portRange), 1),
-			// 	CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
-			// },
-
 			{
-				L:   strings.Replace("sed -i 's/apiToken: \"The api token\",/apiToken: \"${APIToken}\",/' config.ts", "{APIToken}", config.API.APIToken, 1),
+				L:   strings.Replace("sed -i 's/apiToken: \"The api token\",/apiToken: \"{APIToken}\",/' config.ts", "{APIToken}", config.API.APIToken, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
@@ -103,7 +96,7 @@ func CreateContainer(app *fiber.App) {
 			},
 
 			{
-				L:   strings.Replace("sed -i 's/clientID: \"The client id of your application\"/clientID: \"{ClientID}\"/' config.ts", "{ClientID}", config.API.ClientID, 1),
+				L:   strings.Replace("sed -i 's/clientSecret: \"The client secret\"/clientSecret: \"{ClientID}\"/g' config.ts", "{ClientID}", config.API.ClientID, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
@@ -123,7 +116,7 @@ func CreateContainer(app *fiber.App) {
 			},
 
 			{
-				L:   strings.Replace("sed -i 's/authorization: \"password\"/authorization: \"${NodeAuth}\"/' config.ts", "{NodeAuth}", data.Lavalink.NodeAuth, 1),
+				L:   strings.Replace("sed -i 's/authorization: \"password\"/authorization: \"{NodeAuth}\"/' config.ts", "{NodeAuth}", data.Lavalink.NodeAuth, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
@@ -133,12 +126,12 @@ func CreateContainer(app *fiber.App) {
 			},
 
 			{
-				L:   strings.Replace(`mv dist/index.js dist/{Code}.js`, "{Code}", data.Code, 1),
+				L:   strings.Replace("mv dist/index.js dist/{Code}.js", "{Code}", data.Code, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code),
 			},
 
 			{
-				L:   strings.Replace(`pm2 start ./dist/{Code}.js -f`, "{Code}", data.Code, 1),
+				L:   strings.Replace("pm2 start ./dist/{Code}.js -f", "{Code}", data.Code, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code),
 			},
 		}
