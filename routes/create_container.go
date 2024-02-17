@@ -58,47 +58,52 @@ func CreateContainer(app *fiber.App) {
 			},
 
 			{
+				L:   "bun install",
+				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code),
+			},
+
+			{
 				L:   "mv src/files/config.example.ts src/files/config.ts",
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code),
 			},
 
 			{
-				L:   strings.Replace("sed -i 's/|| \"The bot token\",/|| \"{Auth}\",/g' config.ts", "{Auth}", data.Auth, 1),
+				L:   strings.Replace("sed -i 's/token: \"The bot token\"/token: \"{Auth}\"/' config.ts", "{Auth}", data.Auth, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
 			{
-				L:   strings.Replace("sed -i 's/\"The discord User ID of the Owner number One\",/\"{OwnerOne}\",/' config.ts", "{OwnerOne}", data.OwnerOne, 1),
+				L:   strings.Replace("sed -i 's/ownerid1: \"User id\",/ownerid1: \"${OwnerOne}\",/' config.ts", "{OwnerOne}", data.OwnerOne, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
 			{
-				L:   strings.Replace("sed -i 's/\"The discord User ID of the Owner number Two\",/\"{OwnerTwo}\",/' config.ts", "{OwnerTwo}", data.OwnerTwo, 1),
+				L:   strings.Replace("sed -i 's/ownerid2: \"User id\",/ownerid2: \"${OwnerTwo}\",/' config.ts", "{OwnerTwo}", data.OwnerTwo, 1),
+				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			// {
+			// 	L:   strings.Replace("sed -i 's/\"login\\.domain\\.com\"/\"localhost\"/' config.ts", "{PortRange}", strconv.Itoa(portRange), 1),
+			// 	CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
+			// },
+
+			{
+				L:   strings.Replace("sed -i 's/apiToken: \"The api token\",/apiToken: \"${APIToken}\",/' config.ts", "{APIToken}", config.API.APIToken, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
 			{
-				L:   strings.Replace("sed -i 's/\"login\\.domain\\.com\"/\"localhost\"/' config.ts", "{PortRange}", strconv.Itoa(portRange), 1),
+				L:   "sed -i 's/useProxy: false/useProxy: true/' config.ts",
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
 			{
-				L:   strings.Replace("sed -i 's/\"apiToken\": \"The API'\"'\"'s token for create a request (Need to be private for security reason)\",/\"apiToken\": \"{APIToken}\",/' config.ts", "{APIToken}", config.API.APIToken, 1),
+				L:   "sed -i 's/proxyUrl: \"https:\\/\\/login\\.domain\\.com\"/proxyUrl: \"https:\\/\\/srv\\.ihorizon\\.me\"/' config.ts",
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
 			{
-				L:   "sed -i 's/\"useProxy\": false/\"useProxy\": true/' config.ts",
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
-			},
-
-			{
-				L:   "sed -i 's#\"proxyUrl\": \"https://login.example.com\"#\"proxyUrl\": \"https://srv.ihorizon.me\"#' config.ts",
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
-			},
-
-			{
-				L:   strings.Replace("sed -i 's/\"The client ID of your application\"/\"{ClientID}\"/' config.ts", "{ClientID}", config.API.ClientID, 1),
+				L:   strings.Replace("sed -i 's/clientID: \"The client id of your application\"/clientID: \"{ClientID}\"/' config.ts", "{ClientID}", config.API.ClientID, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
@@ -108,13 +113,18 @@ func CreateContainer(app *fiber.App) {
 			},
 
 			{
-				L:   "sed -i 's/\"blacklistPictureInEmbed\": \"The image of the blacklist'\\''s Embed (When blacklisted user attempt to interact with the bot)\",/\"blacklistPictureInEmbed\": \"https:\\/\\/media.discordapp.net\\/attachments\\/1099043567659384942\\/1119214828330950706\\/image.png\",/' config.ts",
+				L:   "sed -i 's/blacklistPictureInEmbed: \"An png url\",/blacklistPictureInEmbed: \"https:\\/\\/media\\.discordapp\\.net\\/attachments\\/1099043567659384942\\/1119214828330950706\\/image\\.png\",/' config.ts",
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
 			{
-				L:   "bun install",
-				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code),
+				L:   strings.Replace("sed -i 's/host: \"lavalink.example.com\"/host: \"{NodeURL}\"/' config.ts", "{NodeURL}", data.Lavalink.NodeURL, '1'),
+				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
+			},
+
+			{
+				L:   strings.Replace("sed -i 's/authorization: \"password\"/authorization: \"${NodeAuth}\"/' config.ts", "{NodeAuth}", data.Lavalink.NodeAuth, 1),
+				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code, "src", "files"),
 			},
 
 			{

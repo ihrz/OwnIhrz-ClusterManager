@@ -12,4 +12,8 @@ type CustomIhorizonData struct {
 	} `json:"Bot"`
 	ExpireIn int64  `json:"ExpireIn"`
 	Code     string `json:"Code"`
+	Lavalink struct {
+		NodeURL  string `json:"NodeURL"`
+		NodeAuth string `json:"NodeAuth"`
+	}
 }

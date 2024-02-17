@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"server/method"
 	"server/routes"
 
 	"github.com/gofiber/fiber/v2"
@@ -9,6 +11,12 @@ import (
 )
 
 func main() {
+	config, err := method.LoadConfig()
+	if err != nil {
+		fmt.Print(err)
+		panic(err)
+	}
+
 	app := fiber.New()
 
 	app.Use(cors.New())
@@ -26,5 +34,5 @@ func main() {
 	routes.PowerOnContainer(app)
 	routes.ShutdownContainer(app)
 
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(":" + config.Cluster.Port))
 }

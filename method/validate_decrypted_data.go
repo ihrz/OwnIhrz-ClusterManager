@@ -11,7 +11,9 @@ func ValidateDecryptedData(data *structure.CustomIhorizonData, config *structure
 		data.OwnerTwo != "" &&
 		data.ExpireIn != 0 &&
 		data.Bot.ID != "" &&
-		data.Code != ""
+		data.Code != "" &&
+		data.Lavalink.NodeURL != "" &&
+		data.Lavalink.NodeAuth != ""
 }
 
 func ValidateAdminKey(key string) bool {

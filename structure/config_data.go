@@ -6,7 +6,7 @@ type APIConfig struct {
 }
 
 type Cluster struct {
-	name       string `mapstructure:"name"`
+	Port       string `mapstructure:"port"`
 	MaxCluster int    `mapstructure:"max_container"`
 }
 
