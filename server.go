@@ -33,6 +33,7 @@ func main() {
 	routes.StartupContainer(app)
 	routes.PowerOnContainer(app)
 	routes.ShutdownContainer(app)
+	routes.ChangeToken(app)
 
 	log.Fatal(app.Listen(":" + config.Cluster.Port))
 }
