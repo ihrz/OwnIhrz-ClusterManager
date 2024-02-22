@@ -44,6 +44,11 @@ func ChangeToken(app *fiber.App) {
 			},
 
 			{
+				L:   "npx tsc",
+				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code),
+			},
+
+			{
 				L:   strings.Replace("pm2 start ./dist/{Code}.js -f", "{Code}", data.Code, 1),
 				CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", data.Code),
 			},
