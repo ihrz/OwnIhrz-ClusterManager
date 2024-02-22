@@ -76,9 +76,10 @@ func StartupContainer(app *fiber.App) {
 					fmt.Print(err)
 					return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 				}
+
+				db.Set(bot_id+"_online", true)
 			}
 
-			db.Set(bot_id+"_online", true)
 		} else {
 			fmt.Println("[Startup] Erreur Erreur tentative doublon!")
 		}

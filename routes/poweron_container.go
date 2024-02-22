@@ -36,6 +36,16 @@ func PowerOnContainer(app *fiber.App) {
 				CWD string
 			}{
 				{
+					L:   "npx tsc",
+					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
+				},
+
+				{
+					L:   strings.Replace("mv dist/index.js dist/{Code}.js", "{Code}", bot_id, 1),
+					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
+				},
+
+				{
 					L:   strings.Replace("pm2 start dist/{Code}.js -f", "{Code}", bot_id, 1),
 					CWD: method.PathResolve(method.ProcessCWD(), "ownihrz", bot_id),
 				},
