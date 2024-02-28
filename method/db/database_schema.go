@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -11,7 +11,7 @@ const databaseFile = "stats.txt"
 
 func Set(key string, value bool) {
 
-	data, err := ioutil.ReadFile(databaseFile)
+	data, err := os.ReadFile(databaseFile)
 	if err != nil {
 		panic(err)
 	}
@@ -32,14 +32,14 @@ func Set(key string, value bool) {
 		lines = append(lines, fmt.Sprintf("%s=%t", key, value))
 	}
 
-	err = ioutil.WriteFile(databaseFile, []byte(strings.Join(lines, "\n")), 0644)
+	err = os.WriteFile(databaseFile, []byte(strings.Join(lines, "\n")), 0644)
 	if err != nil {
 		fmt.Println("Erreur lors de l'écriture dans la base de données.")
 	}
 }
 
 func Get(key string) bool {
-	data, err := ioutil.ReadFile(databaseFile)
+	data, err := os.ReadFile(databaseFile)
 	if err != nil {
 		return false
 	}

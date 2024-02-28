@@ -67,7 +67,7 @@ func ChangeToken(app *fiber.App) {
 
 		db.Set(data.Code+"_online", true)
 
-		return nil
+		return c.SendStatus(200)
 	})
 
 }

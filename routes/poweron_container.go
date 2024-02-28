@@ -62,11 +62,11 @@ func PowerOnContainer(app *fiber.App) {
 				}
 			}
 
-			db.Set(bot_id+"_online", true)
 		} else {
 			fmt.Println("[PowerOn] Erreur tentative doublon!")
 		}
 
+		db.Set(bot_id+"_online", true)
 		return c.SendStatus(200)
 	})
 

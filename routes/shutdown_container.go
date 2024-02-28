@@ -58,11 +58,11 @@ func ShutdownContainer(app *fiber.App) {
 				}
 			}
 
-			db.Set(bot_id+"_online", false)
 		} else {
 			fmt.Println("[Shutdown] Erreur tentative doublon!")
 		}
 
+		db.Set(bot_id+"_online", false)
 		return c.SendStatus(200)
 	})
 }
