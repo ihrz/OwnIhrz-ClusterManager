@@ -1,4 +1,4 @@
-package routes
+package v1
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 
 func DeleteContainer(app *fiber.App) {
 
-	app.Get("/api/instance/delete/:bot_id/:admin_key", func(c *fiber.Ctx) error {
+	app.Get("/api/v1/instance/delete/:bot_id/:admin_key", func(c *fiber.Ctx) error {
 
 		var bot_id = c.Params("bot_id")
 		var admin_key = c.Params("admin_key")

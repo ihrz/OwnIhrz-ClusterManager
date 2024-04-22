@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"server/method"
-	"server/routes"
+	v1 "server/routes/v1"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -28,12 +28,12 @@ func main() {
 		return c.SendString("Only JSON allowed!")
 	})
 
-	routes.CreateContainer(app)
-	routes.DeleteContainer(app)
-	routes.StartupContainer(app)
-	routes.PowerOnContainer(app)
-	routes.ShutdownContainer(app)
-	routes.ChangeToken(app)
+	v1.CreateContainer(app)
+	v1.DeleteContainer(app)
+	v1.StartupContainer(app)
+	v1.PowerOnContainer(app)
+	v1.ShutdownContainer(app)
+	v1.ChangeToken(app)
 
 	log.Fatal(app.Listen(":" + config.Cluster.Port))
 }

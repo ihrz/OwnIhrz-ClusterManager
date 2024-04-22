@@ -1,4 +1,4 @@
-package routes
+package v1
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ import (
 
 func ChangeToken(app *fiber.App) {
 
-	app.Post("/api/instance/change_token", func(c *fiber.Ctx) error {
+	app.Post("/api/v1/instance/change_token", func(c *fiber.Ctx) error {
 		var data structure.CustomIhorizonData
 
 		if err := c.BodyParser(&data); err != nil {
