@@ -1,7 +1,7 @@
 cluster:
   name: "cluster0"
   max_container: 10
-  port: "3450"
+  port: 3450
 
 api:
   apiToken: "api token of iHorizon"
@@ -10,3 +10,10 @@ api:
 container:
   githubRepo: ""
   branchName: ""
+
+database:
+  host: ""
+  port: ""
+  database: ""
+  username: ""
+  password: ""

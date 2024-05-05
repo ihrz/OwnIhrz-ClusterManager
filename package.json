@@ -1,0 +1,36 @@
+{
+  "name": "ownihrz-clustermanager",
+  "version": "1.0.0",
+  "description": "[OwnIhrz-ClusterManager](https://github.com/ihrz/OwnIhrz-ClusterManager) is a backend software used by iHorizon Productions to manage OwnIHRZ.",
+  "main": "./dist/index.js",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "js-yaml": "^4.1.0",
+    "mysql2": "^3.9.7",
+    "quick.db": "^9.1.7"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/js-yaml": "^4.0.9",
+    "bun-types": "^1.1.6",
+    "tslib": "^2.6.2",
+    "typescript": "^5.4.5",
+    "undici-types": "^5.26.5"
+  },
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "test": "npx tsc && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ihrz/OwnIhrz-ClusterManager.git"
+  },
+  "author": "Kisakay",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ihrz/OwnIhrz-ClusterManager/issues"
+  },
+  "homepage": "https://github.com/ihrz/OwnIhrz-ClusterManager#readme"
+}

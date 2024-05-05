@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "dist",
+    "module": "ES2022",
+    "target": "ES2022",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "useUnknownInCatchVariables": true,
+    "allowUnreachableCode": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "importHelpers": true,
+    "strictPropertyInitialization": false,
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+  },
+  "include": [
+    "./",
+    "src/**/*.json",
+  ],
+  "exclude": [
+    "/.github",
+    "./dist",
+    "./node_modules",
+    "./ownihrz"
+  ]
+}
