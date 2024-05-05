@@ -1,6 +1,5 @@
 import getConfigData from './getConfigData.js';
 import loadRoutes from './routesManager.js';
-import database from './database.js';
 
 import express from 'express';
 import bp from 'body-parser';
