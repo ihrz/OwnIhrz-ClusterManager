@@ -108,9 +108,9 @@ export default {
             execSync(index.l, { stdio: [0, 1, 2], cwd: index.cwd })
         });
 
-        let table_1 = db.table("OWNIHRZ");
+        let table = db.table(`cluster${config?.cluster.id}`);
 
-        await table_1.set(`MAIN.${data.OwnerOne}.${data.Code}`,
+        await table.set(`${data.OwnerOne}.${data.Code}`,
             {
                 Path: (path.resolve(process.cwd(), 'ownihrz', data.Code)) as string,
                 Auth: data.Auth,
