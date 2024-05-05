@@ -15,4 +15,9 @@ function validateData(data: Custom_iHorizon): boolean {
         data.Lavalink.NodeAuth != "";
 }
 
-export default validateData;
+function validateAdminKey(key: string): boolean {
+
+    return key == config?.api.apiToken;
+}
+
+export { validateData, validateAdminKey };

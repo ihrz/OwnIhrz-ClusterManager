@@ -1,6 +1,6 @@
 import { Custom_iHorizon } from '../../../types/OwnihrzData';
 import getConfigData from '../../getConfigData.js';
-import validateData from '../../validateData.js';
+import { validateData } from '../../validateData.js';
 import db from '../../database.js';
 
 import { Request, Response } from 'express';
