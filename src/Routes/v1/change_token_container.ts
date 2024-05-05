@@ -1,10 +1,10 @@
-import config from '../../method/getConfigData.js';
 import { validateAdminKey } from '../../method/validateData.js';
+import config from '../../method/getConfigData.js';
 
 import { Request, Response } from 'express';
-import fs from "node:fs";
 import { execSync } from "child_process";
 import path from "node:path";
+import fs from "node:fs";
 
 export default {
     type: 'get',
