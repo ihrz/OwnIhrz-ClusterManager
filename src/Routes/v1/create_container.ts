@@ -41,7 +41,7 @@ export default {
             },
 
             {
-                l: 'mv src/files/config.example.ts src/files/config.ts',
+                l: 'cp src/files/config.example.ts src/files/config.ts',
                 cwd: path.resolve(process.cwd(), 'ownihrz', data.Code)
             },
 
