@@ -107,8 +107,8 @@ export default {
         ].forEach((index) => {
             try {
                 execSync(index.l, { stdio: [0, 1, 2], cwd: index.cwd });
-            } catch (e) {
-                console.log((e as string).split('\n'));
+            } catch (e: any) {
+                console.log(e.toString().split('\n')[0]);
             }
         });
 

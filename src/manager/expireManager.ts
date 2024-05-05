@@ -32,8 +32,8 @@ async function Refresh() {
                 ].forEach((index) => {
                     try {
                         execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd });
-                    } catch (e) {
-                        console.log((e as string).split('\n'));
+                    } catch (e: any) {
+                        console.log(e.toString().split('\n')[0]);
                     }
                 });
 
@@ -48,8 +48,8 @@ async function Refresh() {
                 ].forEach((index) => {
                     try {
                         execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd });
-                    } catch (e) {
-                        console.log((e as string).split('\n'));
+                    } catch (e: any) {
+                        console.log(e.toString().split('\n')[0]);
                     }
                 });
             };
