@@ -31,12 +31,12 @@ export default {
 
         [
             {
-                l: 'git clone --branch ownihrz --depth 1 https://github.com/ihrz/ihrz.git .',
+                l: `git clone --branch ${config.container.branchName} --depth 1 ${config.container.githubRepo} .`,
                 cwd: path.resolve(process.cwd(), 'ownihrz', data.Code)
             },
 
             {
-                l: `yarn`,
+                l: `bun install`,
                 cwd: path.resolve(process.cwd(), 'ownihrz', data.Code)
             },
 
@@ -89,7 +89,7 @@ export default {
 
             // Compile
             {
-                l: 'npx tsc',
+                l: 'bun x tsc',
                 cwd: path.resolve(process.cwd(), 'ownihrz', data.Code)
             },
 
@@ -121,5 +121,7 @@ export default {
                 Code: data.Code
             }
         );
+
+        res.status(200).send("CREATE !");
     },
 };

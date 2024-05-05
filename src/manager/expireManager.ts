@@ -42,6 +42,6 @@ async function Refresh() {
 };
 
 export const refresher = setInterval(() => {
-    console.log("[Refresher] Refresh all OWNIHRW...");
+    console.log("[Refresher] Refresh all OWNIHRZ inside this cluster...");
     Refresh();
 }, 16000);
