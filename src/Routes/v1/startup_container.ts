@@ -1,10 +1,11 @@
 import { validateAdminKey } from '../../method/validateData.js';
+import isContainerOn from '../../method/getContainerStatus.js';
 import config from '../../method/getConfigData.js';
 
 import { Request, Response } from 'express';
-import fs from "node:fs";
 import { execSync } from "child_process";
 import path from "node:path";
+import fs from "node:fs";
 
 export default {
     type: 'get',
@@ -29,32 +30,36 @@ export default {
             return res.status(403).send("Invalid bot_id!");
         };
 
-        [
-            {
-                line: 'rm -r -f dist',
-                cwd: path.join(process.cwd(), 'ownihrz', botId)
-            },
-            {
-                line: 'git pull',
-                cwd: path.join(process.cwd(), 'ownihrz', botId)
-            },
-            {
-                line: "bun install",
-                cwd: path.join(process.cwd(), 'ownihrz', botId),
-            },
-            {
-                line: `npx tsc`,
-                cwd: path.join(process.cwd(), 'ownihrz', botId)
-            },
-            {
-                line: `mv dist/index.js dist/${botId}.js`,
-                cwd: path.join(process.cwd(), 'ownihrz', botId)
-            },
-            {
-                line: `pm2 start dist/${botId}.js -f`,
-                cwd: path.join(process.cwd(), 'ownihrz', botId)
-            },
-        ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
+        if (!await isContainerOn(botId)) {
+            [
+                {
+                    line: 'rm -r -f dist',
+                    cwd: path.join(process.cwd(), 'ownihrz', botId)
+                },
+                {
+                    line: 'git pull',
+                    cwd: path.join(process.cwd(), 'ownihrz', botId)
+                },
+                {
+                    line: "bun install",
+                    cwd: path.join(process.cwd(), 'ownihrz', botId),
+                },
+                {
+                    line: `npx tsc`,
+                    cwd: path.join(process.cwd(), 'ownihrz', botId)
+                },
+                {
+                    line: `mv dist/index.js dist/${botId}.js`,
+                    cwd: path.join(process.cwd(), 'ownihrz', botId)
+                },
+                {
+                    line: `pm2 start dist/${botId}.js -f`,
+                    cwd: path.join(process.cwd(), 'ownihrz', botId)
+                },
+            ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
+        } else {
+            console.log('[Startup] Erreur tentative doublon!');
+        }
 
         return res.sendStatus(200);
     },

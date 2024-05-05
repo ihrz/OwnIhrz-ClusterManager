@@ -1,10 +1,11 @@
 import { validateAdminKey } from '../../method/validateData.js';
+import isContainerOn from '../../method/getContainerStatus.js';
 import config from '../../method/getConfigData.js';
 
 import { Request, Response } from 'express';
-import fs from "node:fs";
 import { execSync } from "child_process";
 import path from "node:path";
+import fs from "node:fs";
 
 export default {
     type: 'get',
@@ -29,16 +30,20 @@ export default {
             return res.status(403).send("Invalid bot_id!");
         };
 
-        [
-            {
-                line: `pm2 stop ${botId} -f --silent`,
-                cwd: process.cwd(),
-            },
-            {
-                line: `pm2 delete ${botId} --silent`,
-                cwd: process.cwd(),
-            },
-        ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
+        if (await isContainerOn(botId)) {
+            [
+                {
+                    line: `pm2 stop ${botId} -f --silent`,
+                    cwd: process.cwd(),
+                },
+                {
+                    line: `pm2 delete ${botId} --silent`,
+                    cwd: process.cwd(),
+                },
+            ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
+        } else {
+            console.log('[Startup] Erreur tentative doublon!');
+        }
 
         return res.sendStatus(200);
     },
