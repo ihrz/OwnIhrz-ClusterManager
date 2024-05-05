@@ -3,32 +3,36 @@ import db from "../method/database.js";
 
 import { execSync } from "child_process";
 
-const clusterKey = `cluster${config?.cluster.id}`;
-
 async function Refresh() {
-    let table = db.table(clusterKey);
-    let result = await table.all();
+    let table = db.table("OWNIHRZ")
+    let result = await table.get("CLUSTER");
 
     let now = new Date().getTime();
 
-    for (let i = 0; i < result.length; i++) {
-        let data = result[i].value;
-        let userId = result[i].id;
+    for (let userId in result) {
+        for (let botId in result[userId]) {
 
-        for (let code in data) {
-            let bot = data[code];
+            if (!result[userId][botId].Code || result[userId][botId].PowerOff) continue;
+            if (result[userId][botId].Cluster !== config?.cluster.id) continue;
 
-            if (!bot.Code || bot.PowerOff) continue;
-            if (now >= bot.ExpireIn) {
-                await db.set(`OWNIHRZ.${userId}.${code}.PowerOff`, true);
+            if (now >= result[userId][botId].ExpireIn) {
+                await db.set(`OWNIHRZ.${userId}.${botId}.PowerOff`, true);
 
-                execSync(`pm2 stop ${code} -f`, { stdio: [0, 1, 2], cwd: process.cwd() });
-                execSync(`pm2 delete ${code}`, { stdio: [0, 1, 2], cwd: process.cwd() });
+                [
+                    {
+                        line: `pm2 stop ${result[userId][botId].Code} -f`,
+                        cwd: process.cwd()
+                    },
+                    {
+                        line: `pm2 delete ${result[userId][botId].Code}`,
+                        cwd: process.cwd()
+                    },
+                ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
             }
         }
     }
 
-    return;
+    return 0;
 };
 
 export const refresher = setInterval(() => {

@@ -110,14 +110,15 @@ export default {
 
         let table = db.table(`cluster${config?.cluster.id}`);
 
-        await table.set(`${data.OwnerOne}.${data.Code}`,
+        await table.set(`CLUSTER.${data.OwnerOne}.${data.Code}`,
             {
                 Path: (path.resolve(process.cwd(), 'ownihrz', data.Code)) as string,
                 Auth: data.Auth,
                 OwnerOne: data.OwnerOne,
                 OwnerTwo: data.OwnerTwo,
-                Bot: data.Bot,
+                Cluster: config.cluster.id,
                 ExpireIn: data.ExpireIn,
+                Bot: data.Bot,
                 Code: data.Code
             }
         );

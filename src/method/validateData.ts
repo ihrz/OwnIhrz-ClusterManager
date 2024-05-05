@@ -6,7 +6,7 @@ function validateData(data: Custom_iHorizon): boolean {
     return data.AdminKey == config?.api.apiToken &&
         data.OwnerOne != "" &&
         data.OwnerTwo != "" &&
-        data.ExpireIn != "" &&
+        data.ExpireIn != 0 &&
         data.Bot.Id != "" &&
         data.Code != "" &&
         data.Lavalink.NodeHost != "" &&

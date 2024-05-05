@@ -9,7 +9,7 @@ export interface Custom_iHorizon {
         Public: boolean;
     };
     Code: string;
-    ExpireIn: string;
+    ExpireIn: number;
     Lavalink: {
         NodeHost: string;
         NodeAuth: string;

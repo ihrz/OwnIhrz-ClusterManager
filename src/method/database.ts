@@ -21,7 +21,6 @@ if (!db) {
         let temp = new QuickDB({
             driver: mysql
         });
-        temp.table(`cluster${config?.cluster.id}`)
 
         resolve(temp);
     });
