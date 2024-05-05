@@ -108,7 +108,7 @@ export default {
             execSync(index.l, { stdio: [0, 1, 2], cwd: index.cwd })
         });
 
-        let table = db.table(`cluster${config?.cluster.id}`);
+        let table = db.table(`OWNIHRZ`);
 
         await table.set(`CLUSTER.${data.OwnerOne}.${data.Code}`,
             {
