@@ -1,6 +1,6 @@
 import { Express } from "express-serve-static-core";
-import { join as pathJoin } from "node:path";
 import { opendir } from "fs/promises";
+import jsPath from "node:path";
 
 import { EltType } from "../types/elt";
 
@@ -9,7 +9,7 @@ async function buildDirectoryTree(path: string): Promise<(string | object)[]> {
     let dir = await opendir(path);
     for await (let dirent of dir) {
         if (dirent.isDirectory()) {
-            result.push({ name: dirent.name, sub: await buildDirectoryTree(pathJoin(path, dirent.name)) });
+            result.push({ name: dirent.name, sub: await buildDirectoryTree(jsPath.join(path, dirent.name)) });
         } else {
             result.push(dirent.name);
         };
@@ -23,11 +23,11 @@ function buildPaths(basePath: string, directoryTree: (string | object)[]): strin
         switch (typeof elt) {
             case "object":
                 for (let subElt of buildPaths((elt as EltType).name, (elt as EltType).sub)) {
-                    paths.push(pathJoin(basePath, subElt));
+                    paths.push(jsPath.join(basePath, subElt));
                 }
                 break;
             case "string":
-                paths.push(pathJoin(basePath, elt));
+                paths.push(jsPath.join(basePath, elt));
                 break;
             default:
                 throw new Error('Invalid element type');
