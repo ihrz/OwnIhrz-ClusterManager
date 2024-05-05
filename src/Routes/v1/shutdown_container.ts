@@ -33,14 +33,20 @@ export default {
         if (await isContainerOn(botId)) {
             [
                 {
-                    line: `pm2 stop ${botId} -f --silent`,
+                    line: `pm2 stop ${botId} -f`,
                     cwd: process.cwd(),
                 },
                 {
-                    line: `pm2 delete ${botId} --silent`,
+                    line: `pm2 delete ${botId}`,
                     cwd: process.cwd(),
                 },
-            ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
+            ].forEach((index) => {
+                try {
+                    execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd });
+                } catch (e) {
+                    console.log((e as string).split('\n'));
+                }
+            });
         } else {
             console.log('[Startup] Erreur tentative doublon!');
         }

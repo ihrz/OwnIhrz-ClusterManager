@@ -93,7 +93,7 @@ export default {
                 cwd: path.resolve(process.cwd(), 'ownihrz', data.Code)
             },
 
-            // Moove file
+            // Move file
             {
                 l: `mv dist/index.js dist/${data.Code}.js`,
                 cwd: path.resolve(process.cwd(), 'ownihrz', data.Code)
@@ -105,7 +105,11 @@ export default {
                 cwd: path.resolve(process.cwd(), 'ownihrz', data.Code)
             }
         ].forEach((index) => {
-            execSync(index.l, { stdio: [0, 1, 2], cwd: index.cwd })
+            try {
+                execSync(index.l, { stdio: [0, 1, 2], cwd: index.cwd });
+            } catch (e) {
+                console.log((e as string).split('\n'));
+            }
         });
 
         let table = db.table(`OWNIHRZ`);

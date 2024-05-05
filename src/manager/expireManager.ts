@@ -12,25 +12,30 @@ async function Refresh() {
 
     for (let userId in result) {
         for (let botId in result[userId]) {
-
             if (!result[userId][botId].Code) continue;
             if (result[userId][botId].Cluster !== config?.cluster.id) continue;
 
             if (now >= result[userId][botId].ExpireIn) {
                 if (result[userId][botId].PowerOff) continue;
-                
+
                 await table.set(`CLUSTER.${userId}.${botId}.PowerOff`, true);
 
                 [
                     {
-                        line: `pm2 stop ${result[userId][botId].Code} -f --silent`,
+                        line: `pm2 stop ${result[userId][botId].Code} -f`,
                         cwd: process.cwd()
                     },
                     {
-                        line: `pm2 delete ${result[userId][botId].Code} --silent`,
+                        line: `pm2 delete ${result[userId][botId].Code} -f`,
                         cwd: process.cwd()
                     },
-                ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
+                ].forEach((index) => {
+                    try {
+                        execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd });
+                    } catch (e) {
+                        console.log((e as string).split('\n'));
+                    }
+                });
 
             } else if (now <= result[userId][botId].ExpireIn && result[userId][botId].PowerOff) {
                 await table.set(`CLUSTER.${userId}.${botId}.PowerOff`, false);
@@ -40,13 +45,18 @@ async function Refresh() {
                         line: `pm2 start ./dist/${result[userId][botId].Code}.js`,
                         cwd: path.join(process.cwd(), 'ownihrz', botId)
                     },
-                ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
-
+                ].forEach((index) => {
+                    try {
+                        execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd });
+                    } catch (e) {
+                        console.log((e as string).split('\n'));
+                    }
+                });
             };
         }
     }
 
-    return 0;
+    return;
 };
 
 export const refresher = setInterval(() => {

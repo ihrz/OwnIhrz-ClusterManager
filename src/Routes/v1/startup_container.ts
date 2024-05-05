@@ -56,7 +56,13 @@ export default {
                     line: `pm2 start dist/${botId}.js -f`,
                     cwd: path.join(process.cwd(), 'ownihrz', botId)
                 },
-            ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
+            ].forEach((index) => {
+                try {
+                    execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd });
+                } catch (e) {
+                    console.log((e as string).split('\n'));
+                }
+            });
         } else {
             console.log('[Startup] Erreur tentative doublon!');
         }

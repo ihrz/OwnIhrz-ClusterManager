@@ -46,7 +46,7 @@ export default {
             try {
                 execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd });
             } catch (e) {
-                console.error(e)
+                console.log((e as string).split('\n'));
             }
         });
 

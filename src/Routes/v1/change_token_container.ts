@@ -36,11 +36,11 @@ export default {
                 cwd: process.cwd(),
             },
             {
-                line: `pm2 delete ${botId}`,
+                line: `pm2 delete ${botId} -f`,
                 cwd: process.cwd(),
             },
             {
-                line: `sed -i 's/token: \"[^\"]*\"/token: \"${newToken}\"/g' config.ts", "{Auth}`,
+                line: `sed -i 's/token: \"[^\"]*\"/token: \"${newToken}\"/g' config.ts"`,
                 cwd: path.resolve(process.cwd(), 'ownihrz', botId, 'src', 'files')
             },
             {
@@ -52,7 +52,13 @@ export default {
                 cwd: path.resolve(process.cwd(), 'ownihrz', botId)
             },
 
-        ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
+        ].forEach((index) => {
+            try {
+                execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd });
+            } catch (e) {
+                console.log((e as string).split('\n'));
+            }
+        });
 
         return res.sendStatus(200);
     },
