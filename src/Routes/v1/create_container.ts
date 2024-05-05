@@ -1,7 +1,7 @@
 import { Custom_iHorizon } from '../../../types/OwnihrzData';
-import getConfigData from '../../getConfigData.js';
-import { validateData } from '../../validateData.js';
-import db from '../../database.js';
+import getConfigData from '../../method/getConfigData.js';
+import { validateData } from '../../method/validateData.js';
+import db from '../../method/database.js';
 
 import { Request, Response } from 'express';
 import { mkdir } from "node:fs/promises";
@@ -110,7 +110,7 @@ export default {
         });
 
         let table_1 = db.table("OWNIHRZ");
-        
+
         await table_1.set(`MAIN.${data.OwnerOne}.${data.Code}`,
             {
                 Path: (path.resolve(process.cwd(), 'ownihrz', data.Code)) as string,

@@ -1,4 +1,4 @@
-import { Custom_iHorizon } from "../types/OwnihrzData";
+import { Custom_iHorizon } from "../../types/OwnihrzData.js";
 import getConfigData from "./getConfigData.js";
 
 const config = getConfigData();

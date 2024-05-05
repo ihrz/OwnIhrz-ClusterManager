@@ -1,4 +1,4 @@
-import getConfigData from './getConfigData.js';
+import getConfigData from './method/getConfigData.js';
 import loadRoutes from './routesManager.js';
 
 import express from 'express';

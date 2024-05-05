@@ -1,5 +1,5 @@
-import getConfigData from '../../getConfigData.js';
-import { validateAdminKey } from '../../validateData.js';
+import getConfigData from '../../method/getConfigData.js';
+import { validateAdminKey } from '../../method/validateData.js';
 
 import { Request, Response } from 'express';
 import fs from "node:fs";

@@ -1,4 +1,4 @@
-import { ConfigType } from "../types/config";
+import { ConfigType } from "../../types/config";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
