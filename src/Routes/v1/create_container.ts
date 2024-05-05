@@ -110,6 +110,7 @@ export default {
         });
 
         let table_1 = db.table("OWNIHRZ");
+        
         await table_1.set(`MAIN.${data.OwnerOne}.${data.Code}`,
             {
                 Path: (path.resolve(process.cwd(), 'ownihrz', data.Code)) as string,
