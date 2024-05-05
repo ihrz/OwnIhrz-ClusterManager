@@ -16,15 +16,15 @@ async function Refresh() {
             if (result[userId][botId].Cluster !== config?.cluster.id) continue;
 
             if (now >= result[userId][botId].ExpireIn) {
-                await db.set(`OWNIHRZ.${userId}.${botId}.PowerOff`, true);
+                await table.set(`CLUSTER.${userId}.${botId}.PowerOff`, true);
 
                 [
                     {
-                        line: `pm2 stop ${result[userId][botId].Code} -f`,
+                        line: `pm2 stop ${result[userId][botId].Code} -f --silent`,
                         cwd: process.cwd()
                     },
                     {
-                        line: `pm2 delete ${result[userId][botId].Code}`,
+                        line: `pm2 delete ${result[userId][botId].Code} --silent`,
                         cwd: process.cwd()
                     },
                 ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
