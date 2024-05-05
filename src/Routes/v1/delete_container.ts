@@ -42,7 +42,13 @@ export default {
                 line: `pm2 delete ${botId}`,
                 cwd: process.cwd()
             },
-        ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
+        ].forEach((index) => {
+            try {
+                execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd });
+            } catch (e) {
+                console.error(e)
+            }
+        });
 
         return res.sendStatus(200);
     },
