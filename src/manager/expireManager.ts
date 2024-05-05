@@ -2,6 +2,7 @@ import config from "../method/getConfigData.js";
 import db from "../method/database.js";
 
 import { execSync } from "child_process";
+import path from 'node:path';
 
 async function Refresh() {
     let table = db.table("OWNIHRZ")
@@ -12,10 +13,12 @@ async function Refresh() {
     for (let userId in result) {
         for (let botId in result[userId]) {
 
-            if (!result[userId][botId].Code || result[userId][botId].PowerOff) continue;
+            if (!result[userId][botId].Code) continue;
             if (result[userId][botId].Cluster !== config?.cluster.id) continue;
 
             if (now >= result[userId][botId].ExpireIn) {
+                if (result[userId][botId].PowerOff) continue;
+                
                 await table.set(`CLUSTER.${userId}.${botId}.PowerOff`, true);
 
                 [
@@ -28,7 +31,18 @@ async function Refresh() {
                         cwd: process.cwd()
                     },
                 ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
-            }
+
+            } else if (now <= result[userId][botId].ExpireIn && result[userId][botId].PowerOff) {
+                await table.set(`CLUSTER.${userId}.${botId}.PowerOff`, false);
+
+                [
+                    {
+                        line: `pm2 start ./dist/${result[userId][botId].Code}.js`,
+                        cwd: path.join(process.cwd(), 'ownihrz', botId)
+                    },
+                ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
+
+            };
         }
     }
 
