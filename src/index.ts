@@ -13,4 +13,6 @@ app.use(bp.text());
 
 loadRoutes(app);
 
-app.listen(config?.cluster.port);
+app.listen(config?.cluster.port, () => {
+    console.log(`🚀 >> API listening on :${config?.cluster.port}`)
+});
