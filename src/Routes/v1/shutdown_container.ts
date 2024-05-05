@@ -31,11 +31,11 @@ export default {
 
         [
             {
-                line: `pm2 stop ${botId} -f`,
+                line: `pm2 stop ${botId} -f --silent`,
                 cwd: process.cwd(),
             },
             {
-                line: `pm2 delete ${botId}`,
+                line: `pm2 delete ${botId} --silent`,
                 cwd: process.cwd(),
             },
         ].forEach((index) => { execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd }); });
