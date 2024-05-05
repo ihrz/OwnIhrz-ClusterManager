@@ -1,7 +1,5 @@
 import { Custom_iHorizon } from "../../types/OwnihrzData.js";
-import getConfigData from "./getConfigData.js";
-
-const config = getConfigData();
+import config from "./getConfigData.js";
 
 function validateData(data: Custom_iHorizon): boolean {
 

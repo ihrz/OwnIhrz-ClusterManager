@@ -1,7 +1,6 @@
-import { MySQLDriver, QuickDB } from 'quick.db';
-import getConfigData from './getConfigData.js';
+import config from './getConfigData.js';
 
-const config = getConfigData();
+import { MySQLDriver, QuickDB } from 'quick.db';
 
 let db: Promise<QuickDB> | undefined;
 
@@ -19,9 +18,12 @@ if (!db) {
 
         await mysql.connect();
 
-        resolve(new QuickDB({
+        let temp = new QuickDB({
             driver: mysql
-        }));
+        });
+        temp.table(`cluster${config?.cluster.id}`)
+
+        resolve(temp);
     });
 };
 

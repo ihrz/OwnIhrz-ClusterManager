@@ -1,5 +1,5 @@
-import getConfigData from '../../method/getConfigData.js';
 import { validateAdminKey } from '../../method/validateData.js';
+import config from '../../method/getConfigData.js';
 
 import { Request, Response } from 'express';
 import fs from "node:fs";
@@ -13,8 +13,6 @@ export default {
 
         const botId = req.params["bot_id"];
         const adminKey = req.params["admin_key"];
-
-        const config = getConfigData();
 
         if (!config?.api.apiToken) {
             console.log("Error: Failed to load config");

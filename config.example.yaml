@@ -1,5 +1,5 @@
 cluster:
-  name: "cluster0"
+  id: 0
   max_container: 10
   port: 3450
 

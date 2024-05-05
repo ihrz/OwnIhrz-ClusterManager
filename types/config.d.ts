@@ -2,7 +2,7 @@
 export interface ConfigType {
 
     cluster: {
-        name: string;
+        id: number;
         max_container: number;
         port: number;
     }

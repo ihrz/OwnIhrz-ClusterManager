@@ -26,4 +26,4 @@ function getConfigData(): ConfigType | undefined {
     }
 };
 
-export default getConfigData;
+export default getConfigData();

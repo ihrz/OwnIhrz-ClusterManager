@@ -1,6 +1,6 @@
 import { Custom_iHorizon } from '../../../types/OwnihrzData';
-import getConfigData from '../../method/getConfigData.js';
 import { validateData } from '../../method/validateData.js';
+import config from '../../method/getConfigData.js';
 import db from '../../method/database.js';
 
 import { Request, Response } from 'express';
@@ -14,7 +14,6 @@ export default {
     run: async (req: Request, res: Response) => {
 
         const data = req.body as Custom_iHorizon;
-        const config = getConfigData();
 
         if (!config?.api.apiToken) {
             console.log("Error: Failed to load config");
