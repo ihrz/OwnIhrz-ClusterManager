@@ -132,3 +132,5 @@ dist
 /target
 ownihrz
 stats.txt
+
+config.yaml
