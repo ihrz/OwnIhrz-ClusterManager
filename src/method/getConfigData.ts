@@ -8,9 +8,7 @@ var CONFIG_CACHE: ConfigType;
 const PATH = path.join(process.cwd(), "config.yaml");
 
 function getConfigData(): ConfigType | undefined {
-
     try {
-
         if (CONFIG_CACHE) {
             return CONFIG_CACHE;
         }
@@ -20,7 +18,6 @@ function getConfigData(): ConfigType | undefined {
         CONFIG_CACHE = file;
 
         return CONFIG_CACHE;
-
     } catch (err) {
         return undefined;
     }
