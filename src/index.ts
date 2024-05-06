@@ -3,13 +3,12 @@ import config from './method/getConfigData.js';
 import loadRoutes from './routesManager.js';
 
 import express from 'express';
-import bp from 'body-parser';
 
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(bp.text());
+app.use(express.text());
 
 refresher;
 loadRoutes(app);
