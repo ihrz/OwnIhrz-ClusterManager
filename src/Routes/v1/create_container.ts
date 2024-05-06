@@ -71,7 +71,7 @@ export default {
 
             // Blacklist
             {
-                l: `sed -i 's/blacklistPictureInEmbed: "An png url",/blacklistPictureInEmbed: "https:\\/\\/media\\.discordapp\\.net\\/attachments\\/1099043567659384942\\/1119214828330950706\\/image\\.png",/' config.ts`,
+                l: `sed -i 's/blacklistPictureInEmbed: "An png url",/blacklistPictureInEmbed: "https:\\/\\/ihorizon\\.me\\/assets\\/img\\/bot\\/bsod\\.png",/' config.ts`,
                 cwd: path.resolve(process.cwd(), 'ownihrz', data.Code, 'src', 'files')
             },
 
