@@ -13,7 +13,7 @@ async function Refresh() {
     for (let userId in result) {
         for (let botId in result[userId]) {
             if (!result[userId][botId].Code) continue;
-            if (result[userId][botId].Cluster !== config?.cluster.id) continue;
+            if (parseInt(result[userId][botId].Cluster) !== config?.cluster.id) continue;
 
             if (now >= result[userId][botId].ExpireIn) {
                 if (result[userId][botId].PowerOff) continue;
