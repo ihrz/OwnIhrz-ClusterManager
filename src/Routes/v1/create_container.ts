@@ -118,7 +118,7 @@ export default {
             }
         });
 
-        let table = db.table(`OWNIHRZ`);
+        let table = db.table('OWNIHRZ');
 
         await table.set(`CLUSTER.${data.OwnerOne}.${data.Code}`,
             {
