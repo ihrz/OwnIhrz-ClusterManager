@@ -3,6 +3,7 @@ export interface Custom_iHorizon {
     AdminKey: string;
     OwnerOne: string;
     OwnerTwo: string;
+    Prefix: string | null;
     Bot: {
         Id: string;
         Name: string;

@@ -63,6 +63,12 @@ export default {
                 cwd: path.resolve(process.cwd(), 'ownihrz', data.Code, 'src', 'files'),
             },
 
+            // BotPrefix
+            {
+                l: data.Prefix !== null ? `sed -i 's/messageCommandsMention: true/messageCommandsMention: false/' config.ts && sed -i 's/defaultMessageCommandsPrefix: ".*"/defaultMessageCommandsPrefix: "${data.Prefix}"/' config.ts` : "",
+                cwd: path.resolve(process.cwd(), 'ownihrz', data.Code, 'src', 'files')
+            },
+
             // ApiToken
             {
                 l: `sed -i 's/apiToken: "The api token",/apiToken: "${config.api.apiToken}",/' config.ts`,
