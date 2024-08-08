@@ -27,8 +27,6 @@ export default {
 
         await mkdir(`${process.cwd()}/ownihrz/${data.Code}`, { recursive: true });
 
-        let port_range = 29268;
-
         [
             {
                 l: `git clone --branch ${config.container.branchName} --depth 1 ${config.container.githubRepo} .`,
