@@ -12,7 +12,6 @@ function validateData(data: Custom_iHorizon): boolean {
         data.Lavalink.NodeHost !== "" &&
         data.Lavalink.NodePort !== 0 &&
         data.Lavalink.NodeAuth !== "" &&
-        data.Prefix != null &&
         data.Prefix !== "";
 }
 
