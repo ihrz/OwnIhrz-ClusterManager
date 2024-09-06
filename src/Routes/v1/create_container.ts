@@ -1,7 +1,7 @@
 import { Custom_iHorizon } from '../../../types/OwnihrzData';
 import { validateData } from '../../method/validateData.js';
 import config from '../../method/getConfigData.js';
-import db from '../../method/database.js';
+import { db } from '../../method/database.js';
 
 import { Request, Response } from 'express';
 import { mkdir } from "node:fs/promises";

@@ -18,6 +18,8 @@ import config from './method/getConfigData.js';
 import loadRoutes from './routesManager.js';
 
 import express from 'express';
+import { logger } from 'ihorizon-tools';
+import { initializeDatabase } from './method/database.js';
 
 const app = express();
 
@@ -28,8 +30,9 @@ app.use(express.text());
 refresher;
 loadRoutes(app);
 
-app.listen(config?.cluster.port, () => {
-    console.log(`🚀 >> API listening on :${config?.cluster.port}`)
+app.listen(config?.cluster.port, async () => {
+    await initializeDatabase();
+    logger.log(`🚀 >> API listening on :${config?.cluster.port}`)
 });
 
 process

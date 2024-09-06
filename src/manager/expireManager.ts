@@ -1,5 +1,5 @@
 import config from "../method/getConfigData.js";
-import db from "../method/database.js";
+import { db } from "../method/database.js";
 
 import { execSync } from "child_process";
 import path from 'node:path';

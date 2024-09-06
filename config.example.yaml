@@ -12,6 +12,7 @@ container:
   branchName: ""
 
 database:
+  mongodb_uri: ""
   host: ""
   port: ""
   database: ""

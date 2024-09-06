@@ -3,6 +3,7 @@ import { opendir } from "fs/promises";
 import jsPath from "node:path";
 
 import { EltType } from "../types/elt";
+import { logger } from "ihorizon-tools";
 
 async function buildDirectoryTree(path: string): Promise<(string | object)[]> {
     let result = [];
@@ -58,7 +59,7 @@ async function loadRoutes(app: Express, path: string = `${process.cwd()}/dist/Ro
         };
     };
 
-    console.log(`🚀 >> Loaded ${i} Routes for the API.`);
+    logger.log(`🚀 >> Loaded ${i} Routes for the API.`);
 };
 
 export default loadRoutes;

@@ -18,6 +18,7 @@ export interface ConfigType {
     }
 
     database: {
+        mongodb_uri: string;
         host: string;
         port: number;
         database: string;

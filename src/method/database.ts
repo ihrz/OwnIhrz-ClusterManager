@@ -1,29 +1,51 @@
 import config from './getConfigData.js';
+import { QuickDB } from 'quick.db';
+import { MongoClient } from 'mongodb';
+import { logger } from 'ihorizon-tools';
+import { MongoDriver } from 'quickmongo';
 
-import { MySQLDriver, QuickDB } from 'quick.db';
+let db: QuickDB<any>;
 
-let db: Promise<QuickDB> | undefined;
-
-if (!db) {
-    db = new Promise<QuickDB>(async (resolve, reject) => {
-        console.log(`🚀 >> Connection attempt to the MYSQL database...`);
-
-        let mysql = new MySQLDriver({
-            host: config?.database.host,
-            user: config?.database.username,
-            password: config?.database.password,
-            database: config?.database.database,
-            port: config?.database?.port,
+async function isMongoDBReachable(mongoUri: string): Promise<boolean> {
+    let client: MongoClient | null = null;
+    try {
+        client = new MongoClient(mongoUri, { serverSelectionTimeoutMS: 5000 });
+        await client.connect();
+        logger.log('✅ >> MongoDB connection successful.');
+        return true;
+    } catch (error) {
+        logger.err(`❌ >> Error connecting to MongoDB: ${error}`);
+        return false;
+    } finally {
+        await client?.close().catch(() => {
+            logger.warn('⚠️ >> Error closing MongoDB connection.');
         });
+    }
+}
 
-        await mysql.connect();
+export async function initializeDatabase() {
+    logger.log(`🚀 >> Attempting to connect to the MongoDB database...`);
+    const connectionAvailable = await isMongoDBReachable(config?.database.mongodb_uri!);
 
-        let temp = new QuickDB({
-            driver: mysql
-        });
+    if (!connectionAvailable) {
+        logger.err('❌ >> Failed to connect to the MongoDB database');
+        process.exit(1);
+    }
 
-        resolve(temp);
-    });
-};
+    try {
+        logger.log('🛠️  >> Connecting to MongoDB with QuickDB...');
+        const mongo = new MongoDriver(config?.database.mongodb_uri!);
 
-export default await db;
+        await mongo.connect();
+        logger.log('✅ >> QuickDB MongoDriver connected.');
+
+        db = new QuickDB({ driver: mongo });
+    } catch (err) {
+        logger.err(`❌ >> Error initializing QuickDB: ${err}`);
+        process.exit(1);
+    }
+
+    logger.log('✅ >> Successfully connected to the MongoDB database');
+}
+
+export { db }
