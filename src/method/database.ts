@@ -1,5 +1,7 @@
 import config from './getConfigData.js';
-import { MySQLDriver, QuickDB } from 'quick.db';
+import { QuickDB } from 'quick.db';
+import { PostgresDriver } from 'quick.db/out/drivers/PostgresDriver.js'
+
 import { MongoClient } from 'mongodb';
 import { logger } from 'ihorizon-tools';
 import { MongoDriver } from 'quickmongo';
@@ -46,7 +48,7 @@ async function isMySqlReachable(database: any): Promise<boolean> {
 
 export async function initializeDatabase() {
     logger.log(`🚀 >> Attempting to connect to the ${config?.database.use_mongodb ? "MongoDB" : "MySQL"} database...`);
-    const connectionAvailable = config?.database.use_mongodb ? await isMongoDBReachable(config?.database.mongodb_uri!) : isMySqlReachable(config?.database);
+    const connectionAvailable = config?.database.use_mongodb ? await isMongoDBReachable(config?.database.mongodb_uri!) : true// isMySqlReachable(config?.database);
 
     if (!connectionAvailable) {
         logger.err(`❌ >> Failed to connect to the ${config?.database.use_mongodb ? "MongoDB" : "MySQL"} database`);
@@ -55,7 +57,7 @@ export async function initializeDatabase() {
 
     try {
         logger.log(`🛠️  >> Connecting to ${config?.database.use_mongodb ? "MongoDB" : "MySQL"} with QuickDB...`);
-        const driver = config?.database.use_mongodb ? new MongoDriver(config?.database.mongodb_uri!) : new MySQLDriver({
+        const driver = config?.database.use_mongodb ? new MongoDriver(config?.database.mongodb_uri!) : new PostgresDriver({
             host: config?.database.host,
             user: config?.database.username,
             database: config?.database.database,
