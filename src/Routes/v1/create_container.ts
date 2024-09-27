@@ -79,24 +79,6 @@ export default {
                 cwd: path.resolve(process.cwd(), 'ownihrz', data.Code, 'src', 'files')
             },
 
-            // Lavalink Host URL
-            {
-                l: `sed -i 's/host: "lavalink.example.com"/host: "${data.Lavalink.NodeHost}"/' config.ts`,
-                cwd: path.resolve(process.cwd(), 'ownihrz', data.Code, 'src', 'files')
-            },
-
-            // Lavalink Authorization
-            {
-                l: `sed -i 's/authorization: "password"/authorization: "${data.Lavalink.NodeAuth}"/' config.ts`,
-                cwd: path.resolve(process.cwd(), 'ownihrz', data.Code, 'src', 'files')
-            },
-
-            // Lavalink Node Port
-            {
-                l: `sed -i 's/port: 2333/port: ${data.Lavalink.NodePort}/' config.ts`,
-                cwd: path.resolve(process.cwd(), 'ownihrz', data.Code, 'src', 'files')
-            },
-
             // Compile
             {
                 l: 'bun x tsc',
