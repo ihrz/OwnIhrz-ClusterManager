@@ -9,9 +9,6 @@ function validateData(data: Custom_iHorizon): boolean {
         data.ExpireIn !== 0 &&
         data.Bot.Id !== "" &&
         data.Code !== "" &&
-        data.Lavalink.NodeHost !== "" &&
-        data.Lavalink.NodePort !== 0 &&
-        data.Lavalink.NodeAuth !== "" &&
         data.Prefix !== "";
 }
 
