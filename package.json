@@ -4,6 +4,8 @@
   "description": "[OwnIhrz-ClusterManager](https://github.com/ihrz/OwnIhrz-ClusterManager) is a backend software used by iHorizon Productions to manage OwnIHRZ.",
   "main": "./dist/index.js",
   "dependencies": {
+    "@types/archiver": "^6.0.3",
+    "archiver": "^7.0.1",
     "express": "^4.19.2",
     "ihorizon-tools": "^1.2.0",
     "js-yaml": "^4.1.0",

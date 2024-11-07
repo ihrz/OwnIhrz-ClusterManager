@@ -3,8 +3,11 @@ import { db } from "../method/database.js";
 
 import { execSync } from "child_process";
 import path from 'node:path';
+import { logger } from "ihorizon-tools";
 
 export async function Refresh() {
+    logger.log("[Refresher] Refresh all OWNIHRZ inside this cluster...".green);
+
     let table = db.table("OWNIHRZ")
     let result = await table.get("CLUSTER");
 

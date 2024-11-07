@@ -17,9 +17,10 @@ import { Refresh } from './manager/expireManager.js';
 import config from './method/getConfigData.js';
 import loadRoutes from './routesManager.js';
 
-import express from 'express';
-import { logger } from 'ihorizon-tools';
+import { iHorizonTimeCalculator, logger } from 'ihorizon-tools';
 import { initializeDatabase } from './method/database.js';
+import { create_ownihrz_backup } from './manager/backupManager.js';
+import express from 'express';
 
 const app = express();
 
@@ -27,8 +28,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.text());
 
+create_ownihrz_backup();
+
 setInterval(() => {
-    console.log("[Refresher] Refresh all OWNIHRZ inside this cluster...");
+    create_ownihrz_backup();
+}, new iHorizonTimeCalculator().to_ms("1d"));
+
+setInterval(() => {
     Refresh();
 }, 70000);
 
