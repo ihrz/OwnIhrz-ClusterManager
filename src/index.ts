@@ -30,7 +30,7 @@ app.use(express.text());
 setInterval(() => {
     console.log("[Refresher] Refresh all OWNIHRZ inside this cluster...");
     Refresh();
-}, 10000);
+}, 70000);
 
 loadRoutes(app);
 
