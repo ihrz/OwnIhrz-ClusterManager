@@ -6,11 +6,15 @@ import { Request, Response } from 'express';
 import fs from "node:fs";
 import { execSync } from "child_process";
 import path from "node:path";
+import { db } from '../../method/database.js';
+import { getOwnerByCode } from '../../method/getOwnerByCode.js';
 
 export default {
     type: 'get',
     apiPath: '/api/v1/instance/poweron/:bot_id/:admin_key/',
     run: async (req: Request, res: Response) => {
+
+        let ownihrz_table = db.table("OWNIHRZ");
 
         const botId = req.params["bot_id"];
         const adminKey = req.params["admin_key"];
@@ -54,6 +58,9 @@ export default {
         } else {
             console.log('[Startup] Erreur tentative doublon!');
         }
+
+        let ownerid1 = getOwnerByCode(await ownihrz_table.get("CLUSTER"), botId);
+        await ownihrz_table.set(`CLUSTER.${ownerid1}.${botId}.PowerOff`, false);
 
         return res.sendStatus(200);
     },

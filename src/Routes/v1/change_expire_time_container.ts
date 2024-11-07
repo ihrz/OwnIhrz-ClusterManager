@@ -2,21 +2,19 @@ import { validateAdminKey } from '../../method/validateData.js';
 import config from '../../method/getConfigData.js';
 
 import { Request, Response } from 'express';
-import fs from "node:fs";
-import { execSync } from "child_process";
 import path from "node:path";
+import fs from "node:fs";
+import { OwnIHRZ_New_Owner_RequestBody, OwnIHRZ_New_Time_RequestBody } from '../../../types/OwnihrzData.js';
 import { db } from '../../method/database.js';
 import { getOwnerByCode } from '../../method/getOwnerByCode.js';
 
 export default {
-    type: 'get',
-    apiPath: '/api/v1/instance/delete/:bot_id/:admin_key',
+    type: 'post',
+    apiPath: '/api/v1/instance/change_time',
     run: async (req: Request, res: Response) => {
 
         let ownihrz_table = db.table("OWNIHRZ");
-
-        const botId = req.params["bot_id"];
-        const adminKey = req.params["admin_key"];
+        const { botId, adminKey, data } = req.body as OwnIHRZ_New_Time_RequestBody;
 
         if (!config?.api.apiToken) {
             console.log("Error: Failed to load config");
@@ -33,29 +31,13 @@ export default {
             return res.status(403).send("Invalid bot_id!");
         };
 
-        [
-            {
-                line: `rm -r --interactive=never ${botId}`,
-                cwd: path.join(process.cwd(), 'ownihrz')
-            },
-            {
-                line: `pm2 stop ${botId} -f`,
-                cwd: process.cwd()
-            },
-            {
-                line: `pm2 delete ${botId}`,
-                cwd: process.cwd()
-            },
-        ].forEach((index) => {
-            try {
-                execSync(index.line, { stdio: [0, 1, 2], cwd: index.cwd });
-            } catch (e: any) {
-                console.log(e.toString().split('\n')[0]);
-            }
-        });
-
         let ownerid1 = getOwnerByCode(await ownihrz_table.get("CLUSTER"), botId);
-        await ownihrz_table.delete(`CLUSTER.${ownerid1}.${botId}`);
+
+        if (data.method === "add") {
+            await ownihrz_table.add(`CLUSTER.${ownerid1}.${botId}.ExpireIn`, data.ms);
+        } else {
+            await ownihrz_table.sub(`CLUSTER.${ownerid1}.${botId}.ExpireIn`, data.ms);
+        }
 
         return res.sendStatus(200);
     },

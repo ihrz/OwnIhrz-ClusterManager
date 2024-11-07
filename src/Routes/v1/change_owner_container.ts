@@ -5,13 +5,21 @@ import { Request, Response } from 'express';
 import { execSync } from "child_process";
 import path from "node:path";
 import fs from "node:fs";
+import { OwnIHRZ_New_Owner_RequestBody } from '../../../types/OwnihrzData.js';
+import { db } from '../../method/database.js';
 
 export default {
     type: 'post',
     apiPath: '/api/v1/instance/change_owner',
     run: async (req: Request, res: Response) => {
 
-        const { botId, OwnerOne, OwnerTwo, adminKey } = req.body;
+        let ownihrz_table = db.table("OWNIHRZ");
+        const { botId, adminKey, OwnerData } = req.body as OwnIHRZ_New_Owner_RequestBody;
+
+        if (!botId || !adminKey || !OwnerData) {
+            console.log("Error: Failed to load args");
+            return res.status(500).send("Failed to load config");
+        }
 
         if (!config?.api.apiToken) {
             console.log("Error: Failed to load config");
@@ -38,11 +46,11 @@ export default {
                 cwd: process.cwd(),
             },
             {
-                line: `sed -i 's/ownerid1: "[^"]*"/ownerid1: "${OwnerOne}"/' config.ts`,
+                line: `sed -i 's/ownerid1: "[^"]*"/ownerid1: "${OwnerData.NewOwnerOne}"/' config.ts`,
                 cwd: path.resolve(process.cwd(), 'ownihrz', botId, 'src', 'files')
             },
             {
-                line: `sed -i 's/ownerid2: "[^"]*"/ownerid2: "${OwnerTwo}"/' config.ts`,
+                line: `sed -i 's/ownerid2: "[^"]*"/ownerid2: "${OwnerData.NewOwnerTwo}"/' config.ts`,
                 cwd: path.resolve(process.cwd(), 'ownihrz', botId, 'src', 'files')
             },
             {
@@ -61,6 +69,14 @@ export default {
                 console.log(e.toString().split('\n')[0]);
             }
         });
+
+        let botData = await ownihrz_table.get(`CLUSTER.${OwnerData.OldOwnerOne}.${botId}`);
+        await ownihrz_table.delete(`CLUSTER.${OwnerData.OldOwnerOne}.${botId}`);
+
+        botData.OwnerOne = OwnerData.NewOwnerOne;
+        botData.OwnerTwo = OwnerData.NewOwnerTwo;
+
+        await ownihrz_table.set(`CLUSTER.${OwnerData.NewOwnerOne}.${botId}`, botData);
 
         return res.sendStatus(200);
     },
