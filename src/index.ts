@@ -13,7 +13,7 @@ execSync("npx tsc", {
     cwd: process.cwd()
 });
 
-import { refresher } from './manager/expireManager.js';
+import { Refresh } from './manager/expireManager.js';
 import config from './method/getConfigData.js';
 import loadRoutes from './routesManager.js';
 
@@ -27,7 +27,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.text());
 
-refresher;
+setInterval(() => {
+    console.log("[Refresher] Refresh all OWNIHRZ inside this cluster...");
+    Refresh();
+}, 10000);
+
 loadRoutes(app);
 
 app.listen(config?.cluster.port, async () => {

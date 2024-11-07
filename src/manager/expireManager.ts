@@ -4,7 +4,7 @@ import { db } from "../method/database.js";
 import { execSync } from "child_process";
 import path from 'node:path';
 
-async function Refresh() {
+export async function Refresh() {
     let table = db.table("OWNIHRZ")
     let result = await table.get("CLUSTER");
 
@@ -58,8 +58,3 @@ async function Refresh() {
 
     return;
 };
-
-export const refresher = setInterval(() => {
-    console.log("[Refresher] Refresh all OWNIHRZ inside this cluster...");
-    Refresh();
-}, 70000);
