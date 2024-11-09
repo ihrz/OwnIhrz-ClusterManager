@@ -35,16 +35,16 @@ export default {
 
         [
             {
-                line: `rm -r --interactive=never ${botId}`,
-                cwd: path.join(process.cwd(), 'ownihrz')
-            },
-            {
                 line: `pm2 stop ${botId} -f`,
                 cwd: process.cwd()
             },
             {
                 line: `pm2 delete ${botId}`,
                 cwd: process.cwd()
+            },
+            {
+                line: `rm -r --interactive=never ${botId}`,
+                cwd: path.join(process.cwd(), 'ownihrz')
             },
         ].forEach((index) => {
             try {
