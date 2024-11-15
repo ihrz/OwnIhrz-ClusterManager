@@ -32,7 +32,7 @@ export default {
 
             for (let owner_id in cluster_ownihrz) {
                 for (let bot_id in cluster_ownihrz[owner_id]) {
-                    if (cluster_ownihrz[owner_id][bot_id].PowerOff || !cluster_ownihrz[owner_id][bot_id].Code) continue;
+                    if (cluster_ownihrz[owner_id][bot_id].ExpireIn <= Date.now() || !cluster_ownihrz[owner_id][bot_id].Code) continue;
                     let botId = cluster_ownihrz[owner_id][bot_id].Code;
 
                     if (!fs.existsSync(path.join(process.cwd(), 'ownihrz', botId))) {
