@@ -36,7 +36,7 @@ setInterval(() => {
 
 setInterval(() => {
     Refresh();
-}, 70000);
+}, 3600000);
 
 loadRoutes(app);
 
