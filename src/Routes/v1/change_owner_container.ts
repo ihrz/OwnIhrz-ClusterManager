@@ -13,7 +13,6 @@ export default {
     apiPath: '/api/v1/instance/change_owner',
     run: async (req: Request, res: Response) => {
 
-        let ownihrz_table = db.table("OWNIHRZ");
         const { botId, adminKey, OwnerData } = req.body as OwnIHRZ_New_Owner_RequestBody;
 
         if (!botId || !adminKey || !OwnerData) {
@@ -35,6 +34,8 @@ export default {
             console.log("[Delete] Erreur bot_id n'existe pas!");
             return res.status(403).send("Invalid bot_id!");
         };
+
+        let ownihrz_table = db.table("OWNIHRZ");
 
         [
             {
