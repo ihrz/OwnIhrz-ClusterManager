@@ -11,13 +11,14 @@ import { getOwnerByCode } from '../../method/getOwnerByCode.js';
 
 export default {
     type: 'get',
-    apiPath: '/api/v1/instance/shutdown/:bot_id/:admin_key',
+    apiPath: '/api/v1/instance/shutdown/:bot_id/:force/:admin_key',
     run: async (req: Request, res: Response) => {
 
         let ownihrz_table = db.table("OWNIHRZ");
 
         const botId = req.params["bot_id"];
         const adminKey = req.params["admin_key"];
+        const force = req.params["force"] === "true";
 
         if (!config?.api.apiToken) {
             console.log("Error: Failed to load config");
@@ -55,8 +56,10 @@ export default {
             console.log('[Startup] Erreur tentative doublon!');
         }
 
-        let ownerid1 = getOwnerByCode(await ownihrz_table.get("CLUSTER"), botId);
-        await ownihrz_table.set(`CLUSTER.${ownerid1}.${botId}.PowerOff`, true);
+        if (force) {
+            let ownerid1 = getOwnerByCode(await ownihrz_table.get("CLUSTER"), botId);
+            await ownihrz_table.set(`CLUSTER.${ownerid1}.${botId}.PowerOff`, true);
+        }
 
         return res.sendStatus(200);
     },
