@@ -17,7 +17,7 @@ import { Refresh } from './manager/expireManager.js';
 import config from './method/getConfigData.js';
 import loadRoutes from './routesManager.js';
 
-import { iHorizonTimeCalculator, logger } from 'ihorizon-tools';
+import { iHorizonTimeCalculator, logger, wait } from 'ihorizon-tools';
 import { initializeDatabase } from './method/database.js';
 import { create_ownihrz_backup } from './manager/backupManager.js';
 import express from 'express';
@@ -28,10 +28,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.text());
 
-create_ownihrz_backup();
+await create_ownihrz_backup(true)
+await wait(3000);
+console.clear();
 
 setInterval(() => {
-    create_ownihrz_backup();
+    create_ownihrz_backup(false);
 }, new iHorizonTimeCalculator().to_ms("1d"));
 
 setInterval(() => {

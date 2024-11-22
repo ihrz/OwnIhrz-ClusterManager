@@ -7,7 +7,7 @@ import yaml from 'js-yaml';
 var CONFIG_CACHE: ConfigType;
 const PATH = path.join(process.cwd(), "config.yaml");
 
-function getConfigData(): ConfigType | undefined {
+function getConfigData(): ConfigType {
     try {
         if (CONFIG_CACHE) {
             return CONFIG_CACHE;
@@ -19,7 +19,7 @@ function getConfigData(): ConfigType | undefined {
 
         return CONFIG_CACHE;
     } catch (err) {
-        return undefined;
+        process.exit(0)
     }
 };
 

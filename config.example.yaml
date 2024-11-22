@@ -12,8 +12,7 @@ container:
   branchName: ""
 
 database:
-  use_mongodb: false
-  mongodb_uri: ""
+  type: "postgres" # postgres or mysql
   host: ""
   port: ""
   database: ""

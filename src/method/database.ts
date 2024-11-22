@@ -1,80 +1,36 @@
 import config from './getConfigData.js';
-import { QuickDB } from 'quick.db';
-import { PostgresDriver } from 'quick.db/out/drivers/PostgresDriver.js'
 
-import { MongoClient } from 'mongodb';
 import { logger } from 'ihorizon-tools';
-import { MongoDriver } from 'quickmongo';
-import mysql from "mysql2/promise.js"
+import { PallasDB } from 'pallas-db';
 
-let db: QuickDB<any>;
-
-async function isMongoDBReachable(mongoUri: string): Promise<boolean> {
-    let client: MongoClient | null = null;
-    try {
-        client = new MongoClient(mongoUri, { serverSelectionTimeoutMS: 5000 });
-        await client.connect();
-        return true;
-    } catch (error) {
-        return false;
-    } finally {
-        await client?.close().catch(() => {
-            logger.warn('⚠️ >> Error closing MongoDB connection.');
-        });
-    }
-}
-
-async function isMySqlReachable(database: any): Promise<boolean> {
-    let connection;
-    try {
-        connection = await mysql.createConnection({
-            host: database.host,
-            user: database.username,
-            database: database.database,
-            password: database.password,
-            port: database.port
-        });
-        await connection.end();
-        return true;
-    } catch (error) {
-        return false;
-    } finally {
-        if (connection && connection.end) {
-            await connection.end();
-        }
-    }
-};
-
+let db: PallasDB;
 
 export async function initializeDatabase() {
-    logger.log(`🚀 >> Attempting to connect to the ${config?.database.use_mongodb ? "MongoDB" : "MySQL"} database...`);
-    const connectionAvailable = config?.database.use_mongodb ? await isMongoDBReachable(config?.database.mongodb_uri!) : true// isMySqlReachable(config?.database);
+    logger.log(`🚀 >> Attempting to connect to the ${config?.database.type} database...`);
 
-    if (!connectionAvailable) {
-        logger.err(`❌ >> Failed to connect to the ${config?.database.use_mongodb ? "MongoDB" : "MySQL"} database`);
-        process.exit(9);
-    }
+    // if (!connectionAvailable) {
+    //     logger.err(`❌ >> Failed to connect to the ${config?.database.use_mongodb ? "MongoDB" : "MySQL"} database`);
+    //     process.exit(9);
+    // }
 
     try {
-        logger.log(`🛠️  >> Connecting to ${config?.database.use_mongodb ? "MongoDB" : "MySQL"} with QuickDB...`);
-        const driver = config?.database.use_mongodb ? new MongoDriver(config?.database.mongodb_uri!) : new PostgresDriver({
+        logger.log(`🛠️  >> Connecting to ${config?.database.type} with QuickDB...`);
+        db = new PallasDB({
             host: config?.database.host,
-            user: config?.database.username,
+            username: config?.database.username,
             database: config?.database.database,
             password: config?.database.password,
-            port: config?.database.port
+            port: config?.database.port,
+            dialect: config?.database.type,
+            tables: ["OWNIHRZ"]
         })
 
-        await driver.connect();
-        logger.log(`✅ >> QuickDB ${config?.database.use_mongodb ? "Mongo" : "Sql"}Driver connected.`);
-
-        db = new QuickDB({ driver });
     } catch (err) {
-        logger.err(`❌ >> Error initializing QuickDB: ${err}`);
+        logger.err(`❌ >> Error initializing PallasDB: ${err}`);
         process.exit(1);
     }
 
-    logger.log(`✅ >> Successfully connected to the ${config?.database.use_mongodb ? "MongoDB" : "MySQL"} database`);
+    logger.log(`✅ >> Successfully connected to the ${config?.database.type} database`);
 }
 
 export { db }
