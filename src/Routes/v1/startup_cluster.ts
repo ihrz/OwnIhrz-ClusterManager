@@ -2,10 +2,22 @@ import { validateAdminKey } from '../../method/validateData.js';
 import isContainerOn from '../../method/getContainerStatus.js';
 import config from '../../method/getConfigData.js';
 import { Request, Response } from 'express';
-import { execSync } from "child_process";
+import { exec } from "child_process";
 import path from "node:path";
 import fs from "node:fs";
 import { db } from '../../method/database.js';
+import util from 'util';
+
+const execPromise = util.promisify(exec);
+
+// Helper function to execute command with Promise
+const executeCommand = async (command: string, cwd: string, botId: string): Promise<void> => {
+    try {
+        await execPromise(command, { cwd });
+    } catch (error: any) {
+        console.error(`Error executing command "${command}" for bot ${botId}:`, error.toString().split('\n')[0]);
+    }
+};
 
 export default {
     type: 'post',
@@ -26,7 +38,6 @@ export default {
         try {
             const table_1 = db.table("OWNIHRZ");
             const allOwners = await table_1.all();
-
             const startupPromises: Promise<void>[] = [];
 
             allOwners.forEach(owner_one => {
@@ -34,14 +45,17 @@ export default {
 
                 for (let owner_id in cluster_ownihrz) {
                     for (let bot_id in cluster_ownihrz[owner_id]) {
-                        if (cluster_ownihrz[owner_id][bot_id].ExpireIn <= Date.now() || !cluster_ownihrz[owner_id][bot_id].Code) {
+                        if (
+                            cluster_ownihrz[owner_id][bot_id].ExpireIn <= Date.now() ||
+                            !cluster_ownihrz[owner_id][bot_id].Code
+                        ) {
                             continue;
                         }
 
                         const botId = cluster_ownihrz[owner_id][bot_id].Code;
-
                         const startupPromise = (async () => {
                             const botPath = path.join(process.cwd(), 'ownihrz', botId);
+
                             if (!fs.existsSync(botPath)) {
                                 console.log(`[Delete] Erreur bot_id ${botId} n'existe pas!`);
                                 return;
@@ -61,12 +75,9 @@ export default {
                                 { line: `pm2 start dist/${botId}.js -f`, cwd: botPath }
                             ];
 
+                            // Execute commands in sequence for each bot, but allow multiple bots to process in parallel
                             for (const cmd of commands) {
-                                try {
-                                    execSync(cmd.line, { stdio: [0, 1, 2], cwd: cmd.cwd });
-                                } catch (e: any) {
-                                    console.error(`Error starting bot ${botId}:`, e.toString().split('\n')[0]);
-                                }
+                                await executeCommand(cmd.line, cmd.cwd, botId);
                             }
 
                             console.log(`[Startup] Container ${botId} started successfully`.green);
@@ -78,8 +89,8 @@ export default {
             });
 
             await Promise.all(startupPromises);
-
             return res.sendStatus(200);
+
         } catch (error) {
             console.error("Cluster startup error:", error);
             return res.status(500).send("Cluster startup failed");
