@@ -53,10 +53,8 @@ export default {
                             }
 
                             const commands = [
-                                { line: 'rm -r -f dist', cwd: botPath },
                                 { line: 'git pull', cwd: botPath },
                                 { line: "bun install", cwd: botPath },
-                                { line: `npx tsc`, cwd: botPath },
                                 { line: `mv dist/index.js dist/${botId}.js`, cwd: botPath },
                                 { line: `pm2 start dist/${botId}.js -f`, cwd: botPath }
                             ];

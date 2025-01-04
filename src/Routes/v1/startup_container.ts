@@ -33,10 +33,6 @@ export default {
         if (!await isContainerOn(botId)) {
             [
                 {
-                    line: 'rm -r -f dist',
-                    cwd: path.join(process.cwd(), 'ownihrz', botId)
-                },
-                {
                     line: 'git pull',
                     cwd: path.join(process.cwd(), 'ownihrz', botId)
                 },
