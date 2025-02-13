@@ -28,7 +28,10 @@ export default {
             return res.status(403).send("Invalid admin_key!");
         };
 
-        if (!fs.existsSync(path.join(process.cwd(), 'ownihrz', botId))) {
+        let ownerid1 = getOwnerByCode(await ownihrz_table.get("CLUSTER"), botId);
+        let bot = await ownihrz_table.get(`CLUSTER.${ownerid1}.${botId}`);
+
+        if (!fs.existsSync(path.join(process.cwd(), 'ownihrz', botId)) && !bot) {
             console.log("[Delete] Erreur bot_id n'existe pas!");
             return res.status(403).send("Invalid bot_id!");
         };
@@ -54,7 +57,6 @@ export default {
             }
         });
 
-        let ownerid1 = getOwnerByCode(await ownihrz_table.get("CLUSTER"), botId);
         await ownihrz_table.delete(`CLUSTER.${ownerid1}.${botId}`);
 
         return res.sendStatus(200);
