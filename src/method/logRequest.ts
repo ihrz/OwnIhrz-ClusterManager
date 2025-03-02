@@ -14,12 +14,22 @@ async function logsRequest(_: { apiPath: string, type: string, run: any }, req: 
         "fields": [
             {
                 "name": "Query Parameters",
-                "value": JSON.stringify(req.query),
+                "value": `${JSON.stringify(req.query)}\n${JSON.stringify(req.params)}`,
                 "inline": true
             },
             {
                 "name": "Body",
                 "value": JSON.stringify(req.body),
+                "inline": true
+            },
+            {
+                "name": "Headers",
+                "value": JSON.stringify(req.headers),
+                "inline": true
+            },
+            {
+                "name": "Cookies",
+                "value": JSON.stringify(req.cookies),
                 "inline": true
             },
             {
