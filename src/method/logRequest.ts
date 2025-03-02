@@ -41,7 +41,7 @@ async function logsRequest({ apiPath, type, run }: { apiPath: string, type: stri
         timestamp: new Date().toISOString(),
     };
 
-    const payload = { embeds: [embed], content: "[ClusterManager] >> Request \n@everyone" };
+    const payload = { embeds: [embed], content: `[ClusterManager] >> Request \<@&1345846465460834304>` };
     const response = await axios.post(Config.api.webhook, payload);
 }
 export default logsRequest;
