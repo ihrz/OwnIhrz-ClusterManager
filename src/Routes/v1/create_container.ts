@@ -7,7 +7,7 @@ import { Request, Response } from 'express';
 import { mkdir } from "node:fs/promises";
 import { execSync } from "child_process";
 import path from "node:path";
-import logsRequest from '../../method/logRequest';
+import logsRequest from '../../method/logRequest.js';
 
 export const route = {
     type: 'post',
