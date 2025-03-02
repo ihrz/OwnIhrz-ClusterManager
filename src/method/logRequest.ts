@@ -1,56 +1,48 @@
 import { Request } from "express";
 import Config from "./getConfigData.js";
+import { axios } from "ihorizon-tools";
 
-async function logsRequest(_: { apiPath: string, type: string, run: any }, req: Request) {
-    // Get the route
-    const route = _.apiPath;
-    // Get the method
-    const method = _.type;
+async function logsRequest({ apiPath, type, run }: { apiPath: string, type: string, run: any }, req: Request) {
 
-    // Make a embed to send to discord webhook
+    const route = apiPath;
+    const method = type;
+
     const embed = {
-        "title": `Request to ${route}`,
-        "description": `Method: ${method.toUpperCase()}`,
-        "fields": [
+        title: `Request to ${route}`,
+        description: `Method: ${method.toUpperCase()}`,
+        fields: [
             {
-                "name": "Query Parameters",
-                "value": `${JSON.stringify(req.query)}\n${JSON.stringify(req.params)}`,
-                "inline": true
+                name: "Query Parameters",
+                value: Object.keys(req.query ?? {}).length ? JSON.stringify(req.query) : "None",
+                inline: true
             },
             {
-                "name": "Body",
-                "value": JSON.stringify(req.body),
-                "inline": true
+                name: "Params",
+                value: Object.keys(req.params ?? {}).length ? JSON.stringify(req.params) : "None",
+                inline: true
             },
             {
-                "name": "Headers",
-                "value": JSON.stringify(req.headers),
-                "inline": true
+                name: "Body",
+                value: Object.keys(req.body ?? {}).length ? JSON.stringify(req.body) : "No Body",
+                inline: true
             },
             {
-                "name": "Cookies",
-                "value": JSON.stringify(req.cookies),
-                "inline": true
+                name: "Cookies",
+                value: Object.keys(req.cookies ?? {}).length ? JSON.stringify(req.cookies) : "No Cookies",
+                inline: true
             },
             {
-                "name": "IP Address",
-                "value": req.ip?.toString(),
-                "inline": true
+                name: "IP Address",
+                value: req.ip?.toString() || "No IP Address",
+                inline: true
             }
         ],
-        "color": 16711680,
-        "timestamp": new Date().toISOString()
+        color: 16711680,
+        timestamp: new Date().toISOString()
     };
-    // Send the embed to the discord webhook
 
-    // Send the embed to the webhook
-    await fetch(Config.api.webhook, {
-        "method": "POST",
-        "headers": {
-            "content-type": "application/json"
-        },
-        "body": JSON.stringify({ embeds: [embed], content: "[ClusterManager] >> Request \n@everyone" })
-    });
+    const payload = { embeds: [embed], content: "[ClusterManager] >> Request \n@everyone" };
+    const response = await axios.post(Config.api.webhook, payload);
 }
 
 export default logsRequest;

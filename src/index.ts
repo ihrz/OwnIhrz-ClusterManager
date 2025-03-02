@@ -21,12 +21,14 @@ import { iHorizonTimeCalculator, logger, wait } from 'ihorizon-tools';
 import { initializeDatabase } from './method/database.js';
 import { create_ownihrz_backup } from './manager/backupManager.js';
 import express from 'express';
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.text());
+app.use(cookieParser());
 
 await create_ownihrz_backup(true)
 await wait(3000);
