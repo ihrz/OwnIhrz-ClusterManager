@@ -1,5 +1,5 @@
 import { Request } from "express";
-import Config from "./getConfigData";
+import Config from "./getConfigData.js";
 
 async function logsRequest(_: { apiPath: string, type: string, run: any }, req: Request) {
     // Get the route
