@@ -138,3 +138,4 @@ config.yaml
 package-lock.json
 bun.lockb
 .vscode
+bun.lock

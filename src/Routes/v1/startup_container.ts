@@ -6,11 +6,13 @@ import { Request, Response } from 'express';
 import { execSync } from "child_process";
 import path from "node:path";
 import fs from "node:fs";
+import logsRequest from '../../method/logRequest.js';
 
-export default {
+export const route = {
     type: 'get',
     apiPath: '/api/v1/instance/startup/:bot_id/:admin_key/',
     run: async (req: Request, res: Response) => {
+        logsRequest(route, req);
 
         const botId = req.params["bot_id"];
         const adminKey = req.params["admin_key"];

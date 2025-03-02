@@ -46,7 +46,7 @@ async function loadRoutes(app: Express, path: string = `${process.cwd()}/dist/Ro
     for (let path of paths) {
         if (!path.endsWith('.js')) return;
 
-        let Routes = await import(path).then(data => data.default);
+        let Routes = await import(path).then(data => data.route);
 
         if (Routes?.type === 'get') {
             app.get(Routes.apiPath, Routes.run);

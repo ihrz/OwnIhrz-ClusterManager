@@ -7,11 +7,13 @@ import path from "node:path";
 import fs from "node:fs";
 import { OwnIHRZ_New_Owner_RequestBody } from '../../../types/OwnihrzData.js';
 import { db } from '../../method/database.js';
+import logsRequest from '../../method/logRequest.js';
 
-export default {
+export const route = {
     type: 'post',
     apiPath: '/api/v1/instance/change_owner',
     run: async (req: Request, res: Response) => {
+        logsRequest(route, req);
 
         const { botId, adminKey, OwnerData } = req.body as OwnIHRZ_New_Owner_RequestBody;
 

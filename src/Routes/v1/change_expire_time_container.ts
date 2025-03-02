@@ -4,14 +4,16 @@ import config from '../../method/getConfigData.js';
 import { Request, Response } from 'express';
 import path from "node:path";
 import fs from "node:fs";
-import { OwnIHRZ_New_Owner_RequestBody, OwnIHRZ_New_Time_RequestBody } from '../../../types/OwnihrzData.js';
+import { OwnIHRZ_New_Time_RequestBody } from '../../../types/OwnihrzData.js';
 import { db } from '../../method/database.js';
 import { getOwnerByCode } from '../../method/getOwnerByCode.js';
+import logsRequest from '../../method/logRequest.js';
 
-export default {
+export const route = {
     type: 'post',
     apiPath: '/api/v1/instance/change_time',
     run: async (req: Request, res: Response) => {
+        logsRequest(route, req);
 
         let ownihrz_table = db.table("OWNIHRZ");
         const { botId, adminKey, data } = req.body as OwnIHRZ_New_Time_RequestBody;

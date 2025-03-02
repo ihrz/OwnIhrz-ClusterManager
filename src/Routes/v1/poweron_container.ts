@@ -8,11 +8,13 @@ import { execSync } from "child_process";
 import path from "node:path";
 import { db } from '../../method/database.js';
 import { getOwnerByCode } from '../../method/getOwnerByCode.js';
+import logsRequest from '../../method/logRequest.js';
 
-export default {
+export const route = {
     type: 'get',
     apiPath: '/api/v1/instance/poweron/:bot_id/:admin_key/',
     run: async (req: Request, res: Response) => {
+        logsRequest(route, req);
 
         let ownihrz_table = db.table("OWNIHRZ");
 

@@ -129,6 +129,12 @@ export class BackupSystem {
 }
 
 export async function create_ownihrz_backup(log: boolean) {
+    // Verify that the file exists
+    if (!fs.existsSync(path.join(process.cwd(), "ownihrz"))) {
+        logger.log("❌ The ownihrz folder does not exist");
+        return;
+    }
+
     const config: BackupConfig = {
         sourcePath: path.join(process.cwd(), "ownihrz"),
         filesToBackup: ["d:backups", "config.ts", "db.sqlite", "d:giveaways"],

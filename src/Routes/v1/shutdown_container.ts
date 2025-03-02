@@ -7,11 +7,14 @@ import path from "node:path";
 import fs from "node:fs";
 import { db } from '../../method/database.js';
 import { getOwnerByCode } from '../../method/getOwnerByCode.js';
+import logsRequest from '../../method/logRequest.js';
 
-export default {
+export const route = {
     type: 'get',
     apiPath: '/api/v1/instance/shutdown/:bot_id/:force/:admin_key',
     run: async (req: Request, res: Response) => {
+        logsRequest(route, req);
+
         const ownihrz_table = db.table("OWNIHRZ");
         const botId = req.params["bot_id"];
         const adminKey = req.params["admin_key"];

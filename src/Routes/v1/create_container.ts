@@ -7,11 +7,13 @@ import { Request, Response } from 'express';
 import { mkdir } from "node:fs/promises";
 import { execSync } from "child_process";
 import path from "node:path";
+import logsRequest from '../../method/logRequest';
 
-export default {
+export const route = {
     type: 'post',
     apiPath: '/api/v1/instance/create',
     run: async (req: Request, res: Response) => {
+        logsRequest(route, req);
 
         const data = req.body as Custom_iHorizon;
 

@@ -10,6 +10,7 @@ export interface ConfigType {
     api: {
         apiToken: string;
         clientId: string;
+        webhook: string;
     }
 
     container: {
