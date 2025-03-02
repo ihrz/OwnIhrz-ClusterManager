@@ -13,36 +13,35 @@ async function logsRequest({ apiPath, type, run }: { apiPath: string, type: stri
         fields: [
             {
                 name: "Query Parameters",
-                value: Object.keys(req.query ?? {}).length ? JSON.stringify(req.query) : "None",
+                value: (Object.keys(req.query ?? {}).length ? JSON.stringify(req.query) : "None").substring(0, 1000),
                 inline: true
             },
             {
                 name: "Params",
-                value: Object.keys(req.params ?? {}).length ? JSON.stringify(req.params) : "None",
+                value: (Object.keys(req.params ?? {}).length ? JSON.stringify(req.params) : "None").substring(0, 1000),
                 inline: true
             },
             {
                 name: "Body",
-                value: Object.keys(req.body ?? {}).length ? JSON.stringify(req.body) : "No Body",
+                value: (Object.keys(req.body ?? {}).length ? JSON.stringify(req.body) : "No Body").substring(0, 1000),
                 inline: true
             },
             {
                 name: "Cookies",
-                value: Object.keys(req.cookies ?? {}).length ? JSON.stringify(req.cookies) : "No Cookies",
+                value: (Object.keys(req.cookies ?? {}).length ? JSON.stringify(req.cookies) : "No Cookies").substring(0, 1000),
                 inline: true
             },
             {
                 name: "IP Address",
-                value: req.ip?.toString() || "No IP Address",
+                value: (req.ip?.toString() || "No IP Address").substring(0, 1000),
                 inline: true
             }
         ],
         color: 16711680,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
     };
 
     const payload = { embeds: [embed], content: "[ClusterManager] >> Request \n@everyone" };
     const response = await axios.post(Config.api.webhook, payload);
 }
-
 export default logsRequest;
