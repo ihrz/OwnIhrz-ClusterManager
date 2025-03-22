@@ -6,11 +6,11 @@
   "dependencies": {
     "archiver": "^7.0.1",
     "cookie-parser": "^1.4.7",
-    "express": "^4.19.2",
-    "ihorizon-tools": "^1.2.0",
+    "express": "^4.21.2",
+    "ihorizon-tools": "^1.4.4",
     "js-yaml": "^4.1.0",
-    "pallas-db": "^1.0.12",
-    "pm2": "^5.4.2"
+    "pallas-db": "^1.0.14",
+    "pm2": "^5.4.3"
   },
   "type": "module",
   "devDependencies": {
@@ -18,9 +18,9 @@
     "@types/cookie-parser": "^1.4.8",
     "@types/express": "^4.17.21",
     "@types/js-yaml": "^4.0.9",
-    "bun-types": "^1.1.26",
-    "tslib": "^2.7.0",
-    "typescript": "^5.5.4",
+    "bun-types": "^1.2.5",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.2",
     "undici-types": "^5.28.4"
   },
   "scripts": {

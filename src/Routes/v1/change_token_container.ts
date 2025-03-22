@@ -8,6 +8,15 @@ import fs from "node:fs";
 import { db } from '../../method/database.js';
 import { getOwnerByCode } from '../../method/getOwnerByCode.js';
 import logsRequest from '../../method/logRequest.js';
+import { axios, AxiosResponse } from 'ihorizon-tools';
+
+async function Get_Bot(discord_bot_token: string): Promise<AxiosResponse<any>> {
+    return await axios.get('https://discord.com/api/v10/applications/@me', {
+        headers: {
+            Authorization: `Bot ${discord_bot_token}`
+        }
+    });
+};
 
 export const route = {
     type: 'get',
@@ -66,8 +75,19 @@ export const route = {
             }
         });
 
+        const botData = await Get_Bot(newToken);
+        if (botData.status !== 200) {
+            console.log("[Delete] Erreur token n'est pas valide!");
+            return res.status(403).send("Invalid token!");
+        };
+
         let ownerid1 = getOwnerByCode(await ownihrz_table.get("CLUSTER"), botId);
         await ownihrz_table.set(`CLUSTER.${ownerid1}.${botId}.Auth`, newToken);
+        await ownihrz_table.set(`CLUSTER.${ownerid1}.${botId}.Bot`, {
+            Id: botData.data.bot.id,
+            Name: botData.data.bot.name,
+            Public: botData.data.bot_public
+        });
 
         return res.sendStatus(200);
     },
