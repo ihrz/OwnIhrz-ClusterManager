@@ -1,30 +1,30 @@
-# OwnIhrz-ClusterManager
+# [REPO MIGRATED TO GITLAB](https://gitlab.com/ihrz/OwnIhrz-ClusterManager)
 
-[OwnIhrz-ClusterManager](https://github.com/ihrz/OwnIhrz-ClusterManager) is a backend software used by iHorizon Productions to manage OwnIHRZ.
+# iHorizon Project
 
-## Contributor's Wall
+## Important Notice: Transition to GitLab
 
-- [Kisakay](https://github.com/Kisakay) (She/Her)
-- [Wyene](https://github.com/WyeneCloud) (He/Him)
+Hello everyone,
 
-## How to selfhost ?
+We wanted to inform you that, as part of an effort to better manage our open-source projects, we have decided to transition the **iHorizon Project** and all its related repositories to **GitLab**. While our repositories will remain accessible on GitHub for the time being, **all future development** and updates will be hosted on GitLab moving forward.
 
-_There are only some few software needed :_
+### Why the move?
+This transition is aimed at improving collaboration, offering better integration features, and leveraging GitLab's unique tools for continuous integration and deployment, which will help streamline our open-source projects.
 
-- [NodeJS](https://nodejs.org) (**18 or higher required**)
-- [Npm](https://npmjs.com) (**With NodeJS**)
-- [Pm2](https://github.com/Unitech/pm2) (**Installed in global**)
-- [Go](https://go.dev) (**>= 1.21 required**)
+### What does this mean for you?
+- **Current repositories on GitHub**: They will remain available, but no further updates will be made here.
+- **New repositories and future development**: All future development will be managed and updated on GitLab.
+- **Important**: If you are using any of our GitHub repositories, we encourage you to start following the project on GitLab for the latest updates and contributions.
 
+### How to follow us on GitLab
+You can find our GitLab organization at the following link:
+- [iHorizon Project on GitLab](https://gitlab.com/ihrz)
 
-## What is OWNIHRZ?
+### Thank you for your support!
+We deeply appreciate the support and contributions we've received on GitHub, and we hope to continue this journey with you on GitLab. If you have any questions or concerns, feel free to reach out.
 
-**[OWNIHRZ](https://github.com/ihrz/ihrz/tree/ownihrz)** is a branch of the iHorizon Discord Bot hosted on GitHub. This branch is designed for customers who want a self-hosted iHorizon bot for their specific needs.
+Stay tuned for more updates!
 
-This repository serves as a backend API for managing OWNIHRZ's cluster, allowing actions such as erasing, deleting, shutting down, powering on, and pausing instances. All of these instances are powered by **[PM2](https://github.com/Unitech/pm2)**.
-
-The code can be adapted for personal use, and the source code for OWNIHRZ's Manager can be found [here](https://github.com/ihrz/ihrz/blob/main/src/core/modules/ownihrzManager.ts). The repository is provided under the **MIT license**, in contrast to iHorizon, which is under a Creative Commons license.
-
-## Structure of this code
-The entire codebase is written in [Golang](https://go.dev), a powerful high-level language.
-
+**Best regards,**  
+Anaïs Saraiva  
+iHorizon Project Creator  
